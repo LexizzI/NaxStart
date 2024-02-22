@@ -1,0 +1,103 @@
+/* MADE BY LEXIZZ */
+/* MAIN PAGE */
+*,
+*::after,
+*::before {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+html {
+    box-sizing: border-box;
+}
+
+body,
+html {
+    width: 100svw;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1a1b26;
+    color: #eee8f5;
+}
+
+/* COLORS 
+
+Background - #1a1b26
+
+Primary color - #191725
+
+Secondary color - #ebbcba
+
+Other colors - #EA9AB2, #EFCFE3, 
+
+
+
+*/
+
+/*HomePage content*/
+
+.content--wrapper {
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    height: 70%;
+    justify-content: center;
+}
+
+.home-title {
+    height: 1em;
+    font-family: "Ubuntu", sans-serif;
+    font-size: 3.5vw;
+}
+
+.block {
+    width: 15em;
+    height: 15em;
+    display: flex;
+    flex-direction: row;
+    margin-inline-start: 3em;
+}
+
+.block-title {
+    font-family: "Ubuntu", sans-serif;
+    font-size: 1vw;
+}
+
+.link-column {
+    width: 7.5em;
+    height: 100%;
+    margin-block-start: 5em;
+}
+
+.page-link {
+    background-color: #191725;
+    width: 7em;
+    height: 7em;
+    border: #ebbcba;
+    border-style: solid;
+    border-radius: 15px;
+    margin-inline-end: 1em;
+    margin-block-start: 0.5em;
+    transition: 0.3s transform;
+}    
+
+.page-link:hover {
+    transform: scale(1.1);
+    background-color: #5c5258;
+
+}
+
+.link-img {
+    width: 99%;
+    height: 99%;
+}
+
