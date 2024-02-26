@@ -1,5 +1,4 @@
-/* MADE BY LEXIZZ */
-/* MAIN PAGE */
+
 *,
 *::after,
 *::before {
@@ -11,6 +10,13 @@
 
 html {
     box-sizing: border-box;
+    --text: #f5e2f8;
+    --background: #0A030A;
+    --primary: #dd96e5;
+    --secondary: #84215c;
+    --accent: #ea87b6;
+    --contrast: rgb(31, 12, 31);
+    --contrast2: rgb(17, 8, 17);
 }
 
 body,
@@ -23,10 +29,8 @@ html {
 
 body {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #1a1b26;
-    color: #eee8f5;
+    background-color: var(--background);
+    color: var(--text);
 }
 
 /* COLORS 
@@ -47,12 +51,91 @@ Other colors - #EA9AB2, #EFCFE3,
 
 .content--wrapper {
     display: flex;
-    flex-direction: row;
-    width: 90%;
-    height: 70%;
+    flex-direction: column;
+    width: 100svw;
+    height: 100svh;
     justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
+.welcome-message {
+    font-family: "Ubuntu", sans-serif;
+    font-size: 2em;
+    margin-bottom: 2em;
+}
+
+.links-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5em;
+}
+
+.link-section {
+    background-color: var(--contrast2);
+    padding: 1em;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.link-section-name {
+    display: flex;
+    align-items: center;
+    gap: 0.20em;
+    justify-content: center;
+    font-family: "Ubuntu", sans-serif;
+    font-size: 2em;
+    position: relative;
+}
+
+.link-section-name::before {
+    content: "";
+    position: absolute;
+    height: 0.3em;
+    width: 110%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    bottom: 0;
+    background-color: rgba(255, 0, 0, 0.404);
+    transition: height 0.5s;
+}
+
+.link-section-name:hover::before {
+    height: 0.6em;
+}
+
+.link-section-name img {
+    height: 1em;
+    aspect-ratio: 1/1;
+    color: var(--text);
+}
+
+.link-section__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1em
+}
+
+.page-link {
+    background-color: var(--contrast);
+    width: 7em;
+    height: 7em;
+    border-radius: 10px;
+    padding: 1em;
+}
+
+.link-img {
+    width: 100%;
+}
+
+/* PRE KUTU*/
 .home-title {
     height: 1em;
     font-family: "Ubuntu", sans-serif;
@@ -78,17 +161,18 @@ Other colors - #EA9AB2, #EFCFE3,
     margin-block-start: 5em;
 }
 
+
+/*
 .page-link {
-    background-color: #191725;
-    width: 7em;
-    height: 7em;
+    
+    
     border: #ebbcba;
     border-style: solid;
     border-radius: 15px;
     margin-inline-end: 1em;
     margin-block-start: 0.5em;
     transition: 0.3s transform;
-}    
+}*/
 
 .page-link:hover {
     transform: scale(1.1);
@@ -96,8 +180,6 @@ Other colors - #EA9AB2, #EFCFE3,
 
 }
 
-.link-img {
-    width: 99%;
-    height: 99%;
-}
 
+
+/* POST KUTU */
