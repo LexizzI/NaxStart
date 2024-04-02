@@ -11,12 +11,12 @@
 html {
     box-sizing: border-box;
     --text: #f5e2f8;
-    --background: #0A030A;
-    --primary: #dd96e5;
-    --secondary: #84215c;
+    --background: #282a36;
+    --primary: #ff79c6;
+    --secondary: #21222c;
     --accent: #ea87b6;
-    --contrast: rgb(31, 12, 31);
-    --contrast2: rgb(17, 8, 17);
+    --contrast: #282a36;
+    --contrast2: #21222c;
 }
 
 body,
