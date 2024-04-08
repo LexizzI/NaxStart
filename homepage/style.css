@@ -1,4 +1,3 @@
-
 *,
 *::after,
 *::before {
@@ -10,13 +9,40 @@
 
 html {
     box-sizing: border-box;
-    --text: #f5e2f8;
-    --background: #282a36;
-    --primary: #ff79c6;
-    --secondary: #21222c;
-    --accent: #ea87b6;
-    --contrast: #282a36;
-    --contrast2: #21222c;
+}
+
+body{
+    background-color: var(--background);
+    color: var(--text);
+
+}
+
+link-section {
+    background-color: var(--contrast2);
+}
+
+.page-link:hover {
+    transform: scale(1.1);
+    background-color: var(--primary);
+
+}
+
+.link-section {
+    background-color: var(--contrast2);
+}
+
+.page-link {
+    background-color: var(--contrast);
+}
+
+.link-section-name img {
+    color: var(--text);
+
+}
+
+.selector {
+    background-color: var(--background);
+    color: var(--text);
 }
 
 body,
@@ -29,25 +55,21 @@ html {
 
 body {
     display: flex;
-    background-color: var(--background);
-    color: var(--text);
 }
 
-/* COLORS 
 
-Background - #1a1b26
+.selector{
+    margin-top: 0.5em;
+    margin-left: 1em;
+    width: 10em;
+    height: 2em;
+    font-family: "Ubuntu", sans-serif;
+}
 
-Primary color - #191725
-
-Secondary color - #ebbcba
-
-Other colors - #EA9AB2, #EFCFE3, 
-
-
-
-*/
 
 /*HomePage content*/
+
+
 
 .content--wrapper {
     display: flex;
@@ -73,7 +95,6 @@ Other colors - #EA9AB2, #EFCFE3,
 }
 
 .link-section {
-    background-color: var(--contrast2);
     padding: 1em;
     border-radius: 8px;
     display: flex;
@@ -102,7 +123,6 @@ Other colors - #EA9AB2, #EFCFE3,
     left: 50%;
     transform: translate(-50%, 0);
     bottom: 0;
-    background-color: rgba(255, 0, 0, 0.404);
     transition: height 0.5s;
 }
 
@@ -113,7 +133,6 @@ Other colors - #EA9AB2, #EFCFE3,
 .link-section-name img {
     height: 1em;
     aspect-ratio: 1/1;
-    color: var(--text);
 }
 
 .link-section__grid {
@@ -124,7 +143,6 @@ Other colors - #EA9AB2, #EFCFE3,
 }
 
 .page-link {
-    background-color: var(--contrast);
     width: 7em;
     height: 7em;
     border-radius: 10px;
@@ -174,11 +192,7 @@ Other colors - #EA9AB2, #EFCFE3,
     transition: 0.3s transform;
 }*/
 
-.page-link:hover {
-    transform: scale(1.1);
-    background-color: #5c5258;
 
-}
 
 
 
