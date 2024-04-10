@@ -13,26 +13,31 @@ html {
 
 body{
     background-color: var(--background);
+    transition: background-color 1s;
     color: var(--text);
 
 }
 
 link-section {
     background-color: var(--contrast2);
+    transition: background-color s;
+
 }
 
 .page-link:hover {
-    transform: scale(1.1);
+    transform: scale(1.1,);
     background-color: var(--primary);
-
 }
 
 .link-section {
     background-color: var(--contrast2);
+    transition: background-color 1s;
+
 }
 
 .page-link {
     background-color: var(--contrast);
+    transition: background-color 0.2s;
 }
 
 .link-section-name img {
@@ -85,6 +90,8 @@ body {
     font-family: "Ubuntu", sans-serif;
     font-size: 2em;
     margin-bottom: 2em;
+    transition: background-color 1s;
+
 }
 
 .links-block {

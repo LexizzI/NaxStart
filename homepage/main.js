@@ -67,6 +67,7 @@ const themes = {
     black: {
         name: "Black",
         background: "#020202",
+        text: "#efefef",
         contrast: "#020200",
         contrast2: "#020200",
     }
