@@ -86,14 +86,6 @@ const themes = {
         contrast: "#afa7a5",
         contrast2: "#847977",
     },
-
-    lexizz: {
-        name: ".fox",
-        background: "#2D2F42",
-        contrast: "#202330",
-        contrast2: "#1C1F26",
-        primary: "#FE7C8E",
-    },
     
 
 };
