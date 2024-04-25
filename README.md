@@ -2,6 +2,5 @@
 Naxstart is a custom homepage project!
 
 You can visit it here! And if you want to add it as your browser's homepage
-<a href"https://lexizzi.github.io/NaxStart/homepage.html">Visit here</a>
 
 
