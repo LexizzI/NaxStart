@@ -79,7 +79,7 @@ const themes = {
     sand: {
         name: "Jean Paul",
         background: "#afa7a5",
-        text: "#eeeeee",
+        text: "#201000",
         primary: "#957e72",
         secondary: "#8549a7",
         accent: "#ffa345",
