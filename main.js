@@ -86,7 +86,14 @@ const themes = {
         contrast: "#afa7a5",
         contrast2: "#847977",
     },
-    
+    pink: {
+        name: "Pink",
+        background: "#F7BAC4",
+        text: "#201000",
+        primary: "#58C7F2",
+        contrast2: "#F69FA7",
+        contrast: "#F7B0B7",
+    },
 
 };
 
