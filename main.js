@@ -95,6 +95,7 @@ const themes = {
         contrast: "#F7B0B7",
     },
 
+
 };
 
 function apply_theme(theme) {
