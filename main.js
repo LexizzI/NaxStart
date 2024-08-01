@@ -94,7 +94,14 @@ const themes = {
         contrast2: "#F69FA7",
         contrast: "#F7B0B7",
     },
-
+    nord: {
+        name: "Mecha",
+        background: "#1f1f1f",
+        text: "#7d7d7d",
+        primary: "#f3fd21",
+        contrast2: "#292929",
+        contrast: "#212121",
+    },
 
 };
 
@@ -134,3 +141,10 @@ if (saved_theme !== null) {
 } else {
     apply_theme(themes.default)
 }
+
+
+let motd = "cosa"
+
+document.getElementById ("footer_text") + "cosa";
+
+
