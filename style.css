@@ -199,4 +199,43 @@ body, html {
     width: 18px;
     height: 15px;
     fill: var(--contrast);
-}   
+}
+
+.settings-panel{
+   position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--contrast2); 
+    color: var(--text);
+    padding: 1.5em;
+    border-radius: 8px;
+    box-shadow: 0px 0px 20px #000000;
+    font-family: "Ubuntu", sans-serif;
+    border: 1px solid var(--primary);
+    z-index: 1000;
+}
+
+.settings-title {
+    font-family: "Ubuntu", sans-serif;
+    font-size: 0.5em;
+    transition: background-color 1s;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.settings-panel {
+    display: none;
+}
+
+.settings-panel.active {
+    display: block !important;
+}
+
+
+#settings-controls {
+    max-height: 450px;
+    overflow-y: auto;
+    padding-right: 10px;
+}

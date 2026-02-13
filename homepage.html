@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,101 +7,46 @@
   <link rel="stylesheet" href="theme/theme.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap">
-  <script type="text/javascript" src="main.js" async></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap">
+  <script type="text/javascript" src="main.js" defer></script>
   <title>NaxStart</title>
 </head>
 
 <body>
-  <select id="themeSelector" class="selector">
-  </select>
+  <select id="themeSelector" class="selector"></select>
 
   <div class="content--wrapper">
     <header class="welcome-message">
-      <h1 id="welcomeMessageText">
-        Welcome to NaxStart
-      </h1>
+      <h1 id="welcomeMessageText">Welcome to NaxStart</h1>
     </header>
+
     <main class="links-block">
-      
       <section class="link-section">
-        <p class="link-section-name"><img src="icons/work.svg">Work</p>
-
-        <div class="link-section__grid">
-          <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank" class="page-link">
-              <img src="img/mail.png" alt="Mail" class="link-img">
-          </a>
-
-        <a href="https://outlook.office.com/mail" target="_blank" class="page-link">
-            <img src="img/outlook.png" alt="Outlook" class="link-img">
-        </a>
-
-        <a href="https://drive.google.com/" target="_blank" class="page-link">
-            <img src="img/drive.png" alt="Drive" class="link-img">
-        </a>
-
-        <a href="https://github.com/" target="_blank" class="page-link">
-            <img src="img/github.png" alt="GitHub" class="link-img">
-        </a>
-      </div>
-      </section>
-
-
-
-
-      <section class="link-section">
-        <p class="link-section-name"><img src="icons/social.svg">Social</p>
-
-        <div class="link-section__grid">
-          <a href="https://web.whatsapp.com/" target="_blank" class="page-link">
-              <img src="img/whatsapp.png" alt="Whatsapp" class="link-img">
-          </a>
-
-        <a href="https://youtube.com/" target="_blank" class="page-link">
-            <img src="img/youtube.png" alt="Youtube" class="link-img">
-        </a>
-
-        <a href="https://www.reddit.com/" target="_blank" class="page-link">
-            <img src="img/reddit.png" alt="Reddit" class="link-img">
-        </a>
-
-        <a href="https://twitch.tv/" target="_blank" class="page-link">
-            <img src="img/twitch.png" alt="Twitch" class="link-img">
-        </a>
-      </div>
+        <p class="link-section-name" id="name-work"></p>
+        <div class="link-section__grid" id="grid-work"></div>
       </section>
 
       <section class="link-section">
-        <p class="link-section-name"><img src="icons/tvshow.svg">Streaming</p>
+        <p class="link-section-name" id="name-social"></p>
+        <div class="link-section__grid" id="grid-social"></div>
+      </section>
 
-        <div class="link-section__grid">
-          <a href="https://www.disneyplus.com" target="_blank" class="page-link">
-              <img src="img/disneyplus.png" alt="Disney+" class="link-img">
-
-          </a>
-
-        <a href="https://www.netflix.com" target="_blank" class="page-link">
-            <img src="img/netflix.png" alt="Netflix" class="link-img">
-        </a>
-
-        <a href="https://www.hbomax.com" target="_blank" class="page-link">
-            <img src="img/hbo.png" alt="HBO" class="link-img">
-        </a>
-
-        <a href="https://www.primevideo.com" target="_blank" class="page-link">
-            <img src="img/amazon.png" alt="Amazon" class="link-img">
-        </a>
-      </div>
+      <section class="link-section">
+        <p class="link-section-name" id="name-streaming"></p>
+        <div class="link-section__grid" id="grid-streaming"></div>
       </section>
     </main>
+
     <footer class="footer">
-      
-      <p class="footer_text">Made with <img src="icons/heart.svg" class="footer_img"> by Lexizz & Contibutors</p>
-      <p class="footer-text">Fuck MAGA and Fuck ICE</p>
-     <p class="footer_text" id="footer_text"></p>
+      <p class="footer_text">Made with <img src="icons/heart.svg" class="footer_img"> by Lexizz & Contributors</p>
+      <p class="footer-text"></p>
+      <p class="footer_text" id="footer_text"></p>
     </footer>
   </div>
-</body>
 
+  <div class="settings-panel" id="settings-panel">
+    <h3 class="settings-title">AJUSTES DINÁMICOS</h3>
+    <div id="settings-controls"></div>
+  </div>
+</body>
 </html>
