@@ -109,7 +109,7 @@ function generateSettingsUI() {
     }
 
     const addBtn = document.createElement("button");
-    addBtn.textContent = "+ Añadir Sección";
+    addBtn.textContent = "+ add section";
     addBtn.style.cssText = "width:100%; background:var(--primary); color:var(--background); border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px;";
     addBtn.onclick = addNewSection;
     container.appendChild(addBtn);
