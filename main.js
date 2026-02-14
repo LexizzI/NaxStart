@@ -36,24 +36,24 @@ const defaultData = {
 let userData = JSON.parse(localStorage.getItem("naxstart_data")) || defaultData;
 
 function renderLinks() {
-    for (const sectionKey in userData) {
-        const grid = document.getElementById(`grid-${sectionKey}`);
-        const titleElement = document.getElementById(`name-${sectionKey}`);
-        
-        if (!grid || !titleElement) continue;
+    const container = document.querySelector(".links-block");
+    if (!container) return;
 
-        titleElement.innerHTML = `<img src="${userData[sectionKey].icon}">${userData[sectionKey].title}`;
+    container.innerHTML = ""; 
 
-        grid.innerHTML = "";
-        userData[sectionKey].links.forEach(link => {
-            if (link.url) {
-                const linkHTML = `
-                    <a href="${link.url}" target="_blank" class="page-link" title="${link.name}">
-                        <img src="${link.img}" alt="${link.name}" class="link-img">
-                    </a>`;
-                grid.innerHTML += linkHTML;
-            }
-        });
+    for (const key in userData) {
+        const section = userData[key];
+        const sectionHTML = `
+            <section class="link-section">
+                <p class="link-section-name"><img src="${section.icon}">${section.title}</p>
+                <div class="link-section__grid">
+                    ${section.links.map(link => link.url ? `
+                        <a href="${link.url}" target="_blank" class="page-link" title="${link.name}">
+                            <img src="${link.img}" alt="${link.name}" class="link-img">
+                        </a>` : '').join('')}
+                </div>
+            </section>`;
+        container.innerHTML += sectionHTML;
     }
     setupHoverEffect();
 }
@@ -65,10 +65,10 @@ function setupHoverEffect() {
     for (const link of links) {
         link.addEventListener("mouseover", event => {
             const imgAlt = event.currentTarget.querySelector('img').alt;
-            welcomeMessageText.textContent = imgAlt;
+            if(welcomeMessageText) welcomeMessageText.textContent = imgAlt;
         });
         link.addEventListener("mouseout", () => {
-            welcomeMessageText.textContent = "Welcome to NaxStart";
+            if(welcomeMessageText) welcomeMessageText.textContent = "Welcome to NaxStart";
         });
     }
 }
@@ -82,34 +82,72 @@ function generateSettingsUI() {
     for (const key in userData) {
         const group = document.createElement("div");
         group.style.marginBottom = "20px";
-        group.innerHTML = `<h4 style="color:var(--primary); text-transform:uppercase; margin-bottom:10px; font-size:0.8em; border-bottom:1px solid var(--primary)">${userData[key].title}</h4>`;
+        group.style.borderBottom = "1px solid var(--primary)";
+        group.style.paddingBottom = "10px";
+
+        group.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <input type="text" value="${userData[key].title}" 
+                    oninput="updateSectionTitle('${key}', this.value)" 
+                    style="background:transparent; color:var(--primary); border:none; border-bottom:1px dashed var(--primary); font-size:1.2em; width:70%; margin-bottom:10px; font-family:'Ubuntu', sans-serif;">
+                <button onclick="deleteSection('${key}')" style="background:#ff5555; color:white; border-radius:4px; padding:2px 5px; cursor:pointer; font-size:10px;">X</button>
+            </div>
+        `;
 
         userData[key].links.forEach((link, i) => {
             const row = document.createElement("div");
             row.style.cssText = "background:var(--contrast); padding:8px; border-radius:6px; margin-bottom:10px;";
             
             row.innerHTML = `
-                <div style="margin-bottom:5px">
-                    <label style="font-size:9px; color:var(--primary); display:block">NOMBRE</label>
-                    <input type="text" value="${link.name}" oninput="updateData('${key}', ${i}, 'name', this.value)" style="width:100%; background:var(--background); color:var(--text); border:1px solid var(--primary); font-size:11px; padding:2px">
-                </div>
-                <div style="margin-bottom:5px">
-                    <label style="font-size:9px; color:var(--primary); display:block">URL</label>
-                    <input type="text" value="${link.url}" oninput="updateData('${key}', ${i}, 'url', this.value)" style="width:100%; background:var(--background); color:var(--text); border:1px solid var(--primary); font-size:11px; padding:2px">
-                </div>
-                <div>
-                    <label style="font-size:9px; color:var(--primary); display:block">ICONO (Ruta)</label>
-                    <input type="text" value="${link.img}" oninput="updateData('${key}', ${i}, 'img', this.value)" style="width:100%; background:var(--background); color:var(--text); border:1px solid var(--primary); font-size:11px; padding:2px">
-                </div>
+                <input type="text" placeholder="Nombre" value="${link.name}" oninput="updateData('${key}', ${i}, 'name', this.value)" style="width:100%; background:var(--background); color:var(--text); border:1px solid var(--primary); font-size:11px; padding:2px; margin-bottom:2px;">
+                <input type="text" placeholder="URL" value="${link.url}" oninput="updateData('${key}', ${i}, 'url', this.value)" style="width:100%; background:var(--background); color:var(--text); border:1px solid var(--primary); font-size:11px; padding:2px; margin-bottom:2px;">
+                <input type="text" placeholder="Icono" value="${link.img}" oninput="updateData('${key}', ${i}, 'img', this.value)" style="width:100%; background:var(--background); color:var(--text); border:1px solid var(--primary); font-size:11px; padding:2px;">
             `;
             group.appendChild(row);
         });
         container.appendChild(group);
     }
+
+    const addBtn = document.createElement("button");
+    addBtn.textContent = "+ Añadir Sección";
+    addBtn.style.cssText = "width:100%; background:var(--primary); color:var(--background); border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px;";
+    addBtn.onclick = addNewSection;
+    container.appendChild(addBtn);
 }
 
 function updateData(sectionKey, index, field, value) {
     userData[sectionKey].links[index][field] = value;
+    saveAndRefresh();
+}
+
+function updateSectionTitle(key, value) {
+    userData[key].title = value;
+    saveAndRefresh();
+}
+
+function addNewSection() {
+    const id = "custom_" + Date.now();
+    userData[id] = {
+        title: "New Section",
+        icon: "icons/work.svg",
+        links: [
+            { name: "", url: "", img: "" }, { name: "", url: "", img: "" },
+            { name: "", url: "", img: "" }, { name: "", url: "", img: "" }
+        ]
+    };
+    saveAndRefresh();
+    generateSettingsUI();
+}
+
+function deleteSection(key) {
+    if(confirm("¿Eliminar esta sección?")) {
+        delete userData[key];
+        saveAndRefresh();
+        generateSettingsUI();
+    }
+}
+
+function saveAndRefresh() {
     localStorage.setItem("naxstart_data", JSON.stringify(userData));
     renderLinks();
 }
@@ -118,12 +156,7 @@ function toggleSettings() {
     const panel = document.getElementById("settings-panel");
     if (panel) {
         panel.classList.toggle("active");
-        
-        if (!panel.classList.contains("active")) {
-            panel.style.display = "none";
-        } else {
-            panel.style.display = "block";
-        }
+        panel.style.display = panel.classList.contains("active") ? "block" : "none";
     }
 }
 
@@ -170,21 +203,14 @@ if(themeSelector) {
 }
 
 const saved_theme = localStorage.getItem("theme");
-if (saved_theme && themes[saved_theme]) {
-    apply_theme(themes[saved_theme]);
-    if(themeSelector) themeSelector.value = saved_theme;
-} else {
-    apply_theme(themes.default);
-}
+apply_theme(themes[saved_theme] || themes.default);
 
 document.addEventListener("DOMContentLoaded", () => {
     renderLinks();
     generateSettingsUI();
-    
     const panel = document.getElementById("settings-panel");
     if (panel) {
         panel.classList.remove("active");
         panel.style.display = "none";
     }
-
 });
