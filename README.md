@@ -8,5 +8,7 @@ Can use this folder structure for adding your custom link images:
 ├── icons
 └── img
 
+Or set a img link from internet
+
 
 Or use the browser version instead: [Re-NaxStart](https://lexizzi.github.io/NaxStart/homepage.html)
