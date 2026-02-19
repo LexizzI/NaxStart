@@ -1,5 +1,6 @@
 "use strict";
 
+// 1. DEFAULT DATA (Translated titles and initial links)
 const defaultData = {
     work: {
         title: "Work",
@@ -7,8 +8,7 @@ const defaultData = {
         links: [
             { name: "Mail", url: "https://mail.google.com", img: "img/mail.png" },
             { name: "GitHub", url: "https://github.com", img: "img/github.png" },
-            { name: "", url: "", img: "" },
-            { name: "", url: "" , img: "" }
+            { name: "", url: "", img: "" }, { name: "", url: "", img: "" }
         ]
     },
     social: {
@@ -16,9 +16,7 @@ const defaultData = {
         icon: "icons/social.svg",
         links: [
             { name: "Youtube", url: "https://youtube.com", img: "img/youtube.png" },
-            { name: "", url: "", img: "" },
-            { name: "", url: "", img: "" },
-            { name: "", url: "", img: "" }
+            { name: "", url: "", img: "" }, { name: "", url: "", img: "" }, { name: "", url: "", img: "" }
         ]
     },
     streaming: {
@@ -26,146 +24,10 @@ const defaultData = {
         icon: "icons/tvshow.svg",
         links: [
             { name: "Netflix", url: "https://netflix.com", img: "img/netflix.png" },
-            { name: "", url: "", img: "" },
-            { name: "", url: "", img: "" },
-            { name: "", url: "", img: "" }
+            { name: "", url: "", img: "" }, { name: "", url: "", img: "" }, { name: "", url: "", img: "" }
         ]
     }
 };
-
-let userData = JSON.parse(localStorage.getItem("naxstart_data")) || defaultData;
-
-function renderLinks() {
-    const container = document.querySelector(".links-block");
-    if (!container) return;
-
-    container.innerHTML = ""; 
-
-    for (const key in userData) {
-        const section = userData[key];
-        const sectionHTML = `
-            <section class="link-section">
-                <p class="link-section-name"><img src="${section.icon}">${section.title}</p>
-                <div class="link-section__grid">
-                    ${section.links.map(link => link.url ? `
-                        <a href="${link.url}" target="_blank" class="page-link" title="${link.name}">
-                            <img src="${link.img}" alt="${link.name}" class="link-img">
-                        </a>` : '').join('')}
-                </div>
-            </section>`;
-        container.innerHTML += sectionHTML;
-    }
-    setupHoverEffect();
-}
-
-function setupHoverEffect() {
-    const links = document.getElementsByClassName("page-link");
-    const welcomeMessageText = document.getElementById("welcomeMessageText");
-
-    for (const link of links) {
-        link.addEventListener("mouseover", event => {
-            const imgAlt = event.currentTarget.querySelector('img').alt;
-            if(welcomeMessageText) welcomeMessageText.textContent = imgAlt;
-        });
-        link.addEventListener("mouseout", () => {
-            if(welcomeMessageText) welcomeMessageText.textContent = "Welcome to NaxStart";
-        });
-    }
-}
-
-function generateSettingsUI() {
-    const container = document.getElementById("settings-controls");
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    for (const key in userData) {
-        const group = document.createElement("div");
-        group.style.marginBottom = "20px";
-        group.style.borderBottom = "1px solid var(--primary)";
-        group.style.paddingBottom = "10px";
-
-        group.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <input type="text" value="${userData[key].title}" 
-                    oninput="updateSectionTitle('${key}', this.value)" 
-                    style="background:transparent; color:var(--primary); border:none; border-bottom:1px dashed var(--primary); font-size:1.2em; width:70%; margin-bottom:10px; font-family:'Ubuntu', sans-serif;">
-                <button onclick="deleteSection('${key}')" style="background:#ff5555; color:white; border-radius:4px; padding:2px 5px; cursor:pointer; font-size:10px;">X</button>
-            </div>
-        `;
-
-        userData[key].links.forEach((link, i) => {
-            const row = document.createElement("div");
-            row.style.cssText = "background:var(--contrast); padding:8px; border-radius:6px; margin-bottom:10px;";
-            
-            row.innerHTML = `
-                <input type="text" placeholder="Nombre" value="${link.name}" oninput="updateData('${key}', ${i}, 'name', this.value)" style="width:100%; background:var(--background); color:var(--text); border:1px solid var(--primary); font-size:11px; padding:2px; margin-bottom:2px;">
-                <input type="text" placeholder="URL" value="${link.url}" oninput="updateData('${key}', ${i}, 'url', this.value)" style="width:100%; background:var(--background); color:var(--text); border:1px solid var(--primary); font-size:11px; padding:2px; margin-bottom:2px;">
-                <input type="text" placeholder="Icono" value="${link.img}" oninput="updateData('${key}', ${i}, 'img', this.value)" style="width:100%; background:var(--background); color:var(--text); border:1px solid var(--primary); font-size:11px; padding:2px;">
-            `;
-            group.appendChild(row);
-        });
-        container.appendChild(group);
-    }
-
-    const addBtn = document.createElement("button");
-    addBtn.textContent = "+ add section";
-    addBtn.style.cssText = "width:100%; background:var(--primary); color:var(--background); border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px;";
-    addBtn.onclick = addNewSection;
-    container.appendChild(addBtn);
-}
-
-function updateData(sectionKey, index, field, value) {
-    userData[sectionKey].links[index][field] = value;
-    saveAndRefresh();
-}
-
-function updateSectionTitle(key, value) {
-    userData[key].title = value;
-    saveAndRefresh();
-}
-
-function addNewSection() {
-    const id = "custom_" + Date.now();
-    userData[id] = {
-        title: "New Section",
-        icon: "icons/work.svg",
-        links: [
-            { name: "", url: "", img: "" }, { name: "", url: "", img: "" },
-            { name: "", url: "", img: "" }, { name: "", url: "", img: "" }
-        ]
-    };
-    saveAndRefresh();
-    generateSettingsUI();
-}
-
-function deleteSection(key) {
-    if(confirm("¿Eliminar esta sección?")) {
-        delete userData[key];
-        saveAndRefresh();
-        generateSettingsUI();
-    }
-}
-
-function saveAndRefresh() {
-    localStorage.setItem("naxstart_data", JSON.stringify(userData));
-    renderLinks();
-}
-
-function toggleSettings() {
-    const panel = document.getElementById("settings-panel");
-    if (panel) {
-        panel.classList.toggle("active");
-        panel.style.display = panel.classList.contains("active") ? "block" : "none";
-    }
-}
-
-document.addEventListener('keydown', (e) => {
-    if (e.key.toLowerCase() === 's' && e.target.tagName !== 'INPUT') {
-        e.preventDefault();
-        toggleSettings();
-    }
-});
 
 const themes = {
     default: { name: "NaxStart", background: "#282a36", text: "#f5e2f8", primary: "#ff79c6", contrast: "#282a36", contrast2: "#21222c" },
@@ -179,6 +41,8 @@ const themes = {
     nord: { name: "Mecha", background: "#1f1f1f", text: "#7d7d7d", primary: "#f3fd21", contrast2: "#292929", contrast: "#212121" }
 };
 
+let userData = JSON.parse(localStorage.getItem("naxstart_data")) || defaultData;
+
 function apply_theme(theme) {
     const root = document.documentElement;
     root.style.setProperty("--background", theme.background);
@@ -188,29 +52,130 @@ function apply_theme(theme) {
     root.style.setProperty("--contrast2", theme.contrast2);
 }
 
-const themeSelector = document.getElementById("themeSelector");
-if(themeSelector) {
-    for (const theme in themes) {
-        const themeOption = document.createElement("option");
-        themeOption.value = theme;
-        themeOption.textContent = themes[theme].name;
-        themeSelector.appendChild(themeOption);
+function initThemeSystem() {
+    const themeSelector = document.getElementById("themeSelector");
+    if (themeSelector) {
+        themeSelector.innerHTML = ""; 
+        for (const key in themes) {
+            const opt = document.createElement("option");
+            opt.value = key;
+            opt.textContent = themes[key].name;
+            themeSelector.appendChild(opt);
+        }
+
+        themeSelector.onchange = (e) => {
+            const selected = themes[e.target.value];
+            apply_theme(selected);
+            localStorage.setItem("theme", e.target.value);
+        };
+
+        const saved = localStorage.getItem("theme") || "default";
+        themeSelector.value = saved;
+        apply_theme(themes[saved]);
     }
-    themeSelector.onchange = event => {
-        apply_theme(themes[event.target.value]);
-        localStorage.setItem("theme", event.target.value);
-    };
 }
 
-const saved_theme = localStorage.getItem("theme");
-apply_theme(themes[saved_theme] || themes.default);
+function renderLinks() {
+    const mainContainer = document.querySelector(".links-block");
+    if (!mainContainer) return;
+    mainContainer.innerHTML = "";
+
+    for (const key in userData) {
+        const section = userData[key];
+        const sectionElement = document.createElement("section");
+        sectionElement.className = "link-section";
+        sectionElement.innerHTML = `
+            <p class="link-section-name"><img src="${section.icon}">${section.title}</p>
+            <div class="link-section__grid">
+                ${section.links.map(link => link.url ? `
+                    <a href="${link.url}" target="_blank" class="page-link" title="${link.name}">
+                        <img src="${link.img}" alt="${link.name}" class="link-img">
+                    </a>` : '').join('')}
+            </div>
+        `;
+        mainContainer.appendChild(sectionElement);
+    }
+    setupHoverEffect();
+}
+
+function generateSettingsUI() {
+    const container = document.getElementById("settings-controls");
+    if (!container) return;
+    container.innerHTML = "";
+
+    for (const key in userData) {
+        const group = document.createElement("div");
+        group.style.marginBottom = "20px";
+        group.innerHTML = `<input type="text" value="${userData[key].title}" oninput="updateTitle('${key}', this.value)" style="background:transparent; color:var(--primary); border:none; border-bottom:1px solid var(--primary); width:100%; font-weight:bold; margin-bottom:10px;">`;
+
+        userData[key].links.forEach((link, i) => {
+            const row = document.createElement("div");
+            row.style.cssText = "background:var(--contrast); padding:5px; border-radius:5px; margin-bottom:5px;";
+            row.innerHTML = `
+                <input type="text" placeholder="Link URL" value="${link.url}" oninput="updateLink('${key}', ${i}, 'url', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary); margin-bottom:2px;">
+                <input type="text" placeholder="Icon Path (img/...)" value="${link.img}" oninput="updateLink('${key}', ${i}, 'img', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary);">
+            `;
+            group.appendChild(row);
+        });
+        container.appendChild(group);
+    }
+
+    const actions = document.createElement("div");
+    actions.innerHTML = `
+        <button onclick="exportJSON()" style="width:100%; background:var(--primary); color:var(--background); border:none; padding:8px; border-radius:4px; font-weight:bold; cursor:pointer; margin-top:10px;">SAVE JSON</button>
+        <label style="display:block; width:100%; text-align:center; margin-top:5px; cursor:pointer; border:1px solid var(--primary); font-size:10px; padding:3px;">
+            LOAD CONFIGURATION <input type="file" accept=".json" onchange="importJSON(event)" style="display:none;">
+        </label>
+    `;
+    container.appendChild(actions);
+}
+
+function updateTitle(key, val) { userData[key].title = val; save(); }
+function updateLink(key, i, f, v) { userData[key].links[i][f] = v; save(); }
+function save() { localStorage.setItem("naxstart_data", JSON.stringify(userData)); renderLinks(); }
+
+function exportJSON() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userData, null, 4));
+    const dl = document.createElement('a');
+    dl.setAttribute("href", dataStr);
+    dl.setAttribute("download", "naxstart_config.json");
+    dl.click();
+}
+
+function importJSON(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => { 
+        try {
+            userData = JSON.parse(ev.target.result); 
+            save(); 
+            generateSettingsUI(); 
+        } catch(err) {
+            alert("Error: Invalid JSON file.");
+        }
+    };
+    reader.readAsText(file);
+}
+
+function setupHoverEffect() {
+    const links = document.querySelectorAll(".page-link");
+    const welcome = document.getElementById("welcomeMessageText");
+    links.forEach(l => {
+        l.onmouseover = () => { if(welcome) welcome.textContent = l.title || "Link"; };
+        l.onmouseout = () => { if(welcome) welcome.textContent = "Welcome to NaxStart"; };
+    });
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 's' && e.target.tagName !== 'INPUT') {
+        const panel = document.getElementById("settings-panel");
+        if (panel) panel.classList.toggle("active");
+    }
+});
 
 document.addEventListener("DOMContentLoaded", () => {
+    initThemeSystem(); 
     renderLinks();
     generateSettingsUI();
-    const panel = document.getElementById("settings-panel");
-    if (panel) {
-        panel.classList.remove("active");
-        panel.style.display = "none";
-    }
 });

@@ -1,0 +1,32 @@
+{
+    "work": {
+        "title": "Work",
+        "icon": "icons/work.svg",
+        "links": [
+            { "name": "", "url": "", "img": "" },
+            { "name": "", "url": "", "img": "" },
+            { "name": "", "url": "", "img": "" },
+            { "name": "", "url": "", "img": "" }
+        ]
+    },
+    "social": {
+        "title": "Social",
+        "icon": "icons/social.svg",
+        "links": [
+            { "name": "", "url": "", "img": "" },
+            { "name": "", "url": "", "img": "" },
+            { "name": "", "url": "", "img": "" },
+            { "name": "", "url": "", "img": "" }
+        ]
+    },
+    "streaming": {
+        "title": "Streaming",
+        "icon": "icons/tvshow.svg",
+        "links": [
+            { "name": "", "url": "", "img": "" },
+            { "name": "", "url": "", "img": "" },
+            { "name": "", "url": "", "img": "" },
+            { "name": "", "url": "", "img": "" }
+        ]
+    }
+}
