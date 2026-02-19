@@ -1,10 +1,8 @@
 "use strict";
 
-// 1. DEFAULT DATA (Translated titles and initial links)
 const defaultData = {
     work: {
         title: "Work",
-        icon: "icons/work.svg",
         links: [
             { name: "Mail", url: "https://mail.google.com", img: "img/mail.png" },
             { name: "GitHub", url: "https://github.com", img: "img/github.png" },
@@ -13,7 +11,6 @@ const defaultData = {
     },
     social: {
         title: "Social",
-        icon: "icons/social.svg",
         links: [
             { name: "Youtube", url: "https://youtube.com", img: "img/youtube.png" },
             { name: "", url: "", img: "" }, { name: "", url: "", img: "" }, { name: "", url: "", img: "" }
@@ -21,13 +18,25 @@ const defaultData = {
     },
     streaming: {
         title: "Streaming",
-        icon: "icons/tvshow.svg",
         links: [
             { name: "Netflix", url: "https://netflix.com", img: "img/netflix.png" },
             { name: "", url: "", img: "" }, { name: "", url: "", img: "" }, { name: "", url: "", img: "" }
         ]
     }
 };
+
+const quotes = [
+    "Believe in yourself!",
+    "Stay focused, stay humble.",
+    "Make it happen.",
+    "Small steps every day.",
+    "Your only limit is your mind.",
+    "Keep pushing forward.",
+    "Work hard in silence.",
+    "Dream big, do bigger.",
+    "Consistency is key.",
+    "Focus on the goal."
+];
 
 const themes = {
     default: { name: "NaxStart", background: "#282a36", text: "#f5e2f8", primary: "#ff79c6", contrast: "#282a36", contrast2: "#21222c" },
@@ -62,13 +71,11 @@ function initThemeSystem() {
             opt.textContent = themes[key].name;
             themeSelector.appendChild(opt);
         }
-
         themeSelector.onchange = (e) => {
             const selected = themes[e.target.value];
             apply_theme(selected);
             localStorage.setItem("theme", e.target.value);
         };
-
         const saved = localStorage.getItem("theme") || "default";
         themeSelector.value = saved;
         apply_theme(themes[saved]);
@@ -85,7 +92,7 @@ function renderLinks() {
         const sectionElement = document.createElement("section");
         sectionElement.className = "link-section";
         sectionElement.innerHTML = `
-            <p class="link-section-name"><img src="${section.icon}">${section.title}</p>
+            <p class="link-section-name">${section.title}</p>
             <div class="link-section__grid">
                 ${section.links.map(link => link.url ? `
                     <a href="${link.url}" target="_blank" class="page-link" title="${link.name}">
@@ -96,6 +103,14 @@ function renderLinks() {
         mainContainer.appendChild(sectionElement);
     }
     setupHoverEffect();
+}
+
+function initQuoteSystem() {
+    const quoteContainer = document.getElementById("quote-box");
+    if (quoteContainer) {
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        quoteContainer.textContent = randomQuote;
+    }
 }
 
 function generateSettingsUI() {
@@ -112,8 +127,9 @@ function generateSettingsUI() {
             const row = document.createElement("div");
             row.style.cssText = "background:var(--contrast); padding:5px; border-radius:5px; margin-bottom:5px;";
             row.innerHTML = `
-                <input type="text" placeholder="Link URL" value="${link.url}" oninput="updateLink('${key}', ${i}, 'url', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary); margin-bottom:2px;">
-                <input type="text" placeholder="Icon Path (img/...)" value="${link.img}" oninput="updateLink('${key}', ${i}, 'img', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary);">
+                <input type="text" placeholder="Name" value="${link.name || ''}" oninput="updateLink('${key}', ${i}, 'name', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary); margin-bottom:2px;">
+                <input type="text" placeholder="URL" value="${link.url}" oninput="updateLink('${key}', ${i}, 'url', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary); margin-bottom:2px;">
+                <input type="text" placeholder="Icon" value="${link.img}" oninput="updateLink('${key}', ${i}, 'img', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary);">
             `;
             group.appendChild(row);
         });
@@ -122,9 +138,9 @@ function generateSettingsUI() {
 
     const actions = document.createElement("div");
     actions.innerHTML = `
-        <button onclick="exportJSON()" style="width:100%; background:var(--primary); color:var(--background); border:none; padding:8px; border-radius:4px; font-weight:bold; cursor:pointer; margin-top:10px;">SAVE JSON</button>
+        <button onclick="exportJSON()" style="width:100%; background:var(--primary); color:var(--background); border:none; padding:8px; border-radius:4px; font-weight:bold; cursor:pointer; margin-top:10px;">SAVE CONFIG</button>
         <label style="display:block; width:100%; text-align:center; margin-top:5px; cursor:pointer; border:1px solid var(--primary); font-size:10px; padding:3px;">
-            LOAD CONFIGURATION <input type="file" accept=".json" onchange="importJSON(event)" style="display:none;">
+            LOAD CONFIG <input type="file" accept=".json" onchange="importJSON(event)" style="display:none;">
         </label>
     `;
     container.appendChild(actions);
@@ -138,7 +154,7 @@ function exportJSON() {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userData, null, 4));
     const dl = document.createElement('a');
     dl.setAttribute("href", dataStr);
-    dl.setAttribute("download", "naxstart_config.json");
+    dl.setAttribute("download", "config.json");
     dl.click();
 }
 
@@ -152,7 +168,7 @@ function importJSON(e) {
             save(); 
             generateSettingsUI(); 
         } catch(err) {
-            alert("Error: Invalid JSON file.");
+            alert("Error: Invalid JSON");
         }
     };
     reader.readAsText(file);
@@ -176,6 +192,7 @@ document.addEventListener('keydown', (e) => {
 
 document.addEventListener("DOMContentLoaded", () => {
     initThemeSystem(); 
+    initQuoteSystem();
     renderLinks();
     generateSettingsUI();
 });
