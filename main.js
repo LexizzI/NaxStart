@@ -46,9 +46,6 @@ const quotes = [
     "Sometimes, you need to step back to move forward.",
     "Do not be sorry. Be better.",
     "t’s more important to master the cards you’re holding than to complain about the ones your opponent was dealt.",
-    "",
-    "",
-    "",
 
 ];
 
