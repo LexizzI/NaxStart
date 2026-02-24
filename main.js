@@ -35,7 +35,21 @@ const quotes = [
     "Work hard in silence.",
     "Dream big, do bigger.",
     "Consistency is key.",
-    "Focus on the goal."
+    "Focus on the goal.",
+    "No one is illegal",
+    "Be yourself; everyone else is already taken",
+    "Per aspera ad astra",
+    "Don't wish it were easier. Wish you were better.",
+    "Never give up, trust your instincts.",
+    "Level up!",
+    "If you're encountering enemies, you're going the right way.",
+    "Sometimes, you need to step back to move forward.",
+    "Do not be sorry. Be better.",
+    "t’s more important to master the cards you’re holding than to complain about the ones your opponent was dealt.",
+    "",
+    "",
+    "",
+
 ];
 
 const themes = {
