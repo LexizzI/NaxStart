@@ -56,6 +56,26 @@ body, html {
     font-size: 2em;
     margin-bottom: 2em;
     transition: background-color 1s;
+    min-height: 1.2em;
+    overflow: hidden;
+    width: 100%;
+    text-align: center;
+
+}
+
+#welcomeMessageText {
+    transition: opacity 0.2s ease-in-out;
+}
+
+.quote-box {
+    color: var(--primary); 
+    font-family: 'Ubuntu', sans-serif; 
+    font-size: 0.7em;
+    text-align: center; 
+    margin-top: 20px; 
+    font-style: italic;
+    height: 1.2em;
+    width: 100%;
 
 }
 

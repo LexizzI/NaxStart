@@ -13,7 +13,7 @@ const defaultData = {
         title: "Social",
         links: [
             { name: "Youtube", url: "https://youtube.com", img: "img/youtube.png" },
-            { name: "", url: "", img: "" }, { name: "", url: "", img: "" }, { name: "", url: "", img: "" }
+            { name: "", url: "", img: "" }, { name: "", url: "" , img: "" }, { name: "", url: "", img: "" }
         ]
     },
     streaming: {
@@ -45,20 +45,27 @@ const quotes = [
     "If you're encountering enemies, you're going the right way.",
     "Sometimes, you need to step back to move forward.",
     "Do not be sorry. Be better.",
-    "t’s more important to master the cards you’re holding than to complain about the ones your opponent was dealt.",
-
+    "It’s more important to master the cards you’re holding than to complain about the ones your opponent was dealt.",
+    "Praise the Sun!",
+    "The cake is a lie.",
+    "Nothing is true, everything is permitted.",
+    "War... war never changes.",
+    "A man chooses, a slave obeys.",
+    "Wake up, Samurai. We have a city to burn.",
+    "Protocol 3: Protect the Pilot.",
+    "Hesitation is defeat."
 ];
 
 const themes = {
     default: { name: "NaxStart", background: "#282a36", text: "#f5e2f8", primary: "#ff79c6", contrast: "#282a36", contrast2: "#21222c" },
-    tokyoNight: { name: "Tokyo Night", background: "#24283b", text: "#cfc9c2", primary: "#f7768e", contrast: "#414868", contrast2: "#1a1b26" },
-    rosepine: { name: "Rosé Pine", background: "#232136", text: "#faf4ed", primary: "#eb6f92", contrast: "#1f1d2e", contrast2: "#191724" },
-    white: { name: "White", background: "#cccdcf", text: "#283b49", primary: "#62b3ff", contrast: "#7a7a7a", contrast2: "#afafaf" },
-    black: { name: "Black", background: "#020202", text: "#efefef", primary: "#1c1b22", contrast: "#020200", contrast2: "#020200" },
-    purple: { name: "Gengar", background: "#3D2E4D", text: "#deb7ff", primary: "#D75054", contrast: "#261F34", contrast2: "#30243D" },
-    sand: { name: "Jean Paul", background: "#afa7a5", text: "#201000", primary: "#957e72", contrast: "#afa7a5", contrast2: "#847977" },
-    pink: { name: "Pink", background: "#F7BAC4", text: "#201000", primary: "#58C7F2", contrast2: "#F69FA7", contrast: "#F7B0B7" },
-    nord: { name: "Mecha", background: "#1f1f1f", text: "#7d7d7d", primary: "#f3fd21", contrast2: "#292929", contrast: "#212121" }
+    ubuntu: { name: "Ubuntu", background: "#300a24", text: "#ffffff", primary: "#e95420", contrast: "#5e2750", contrast2: "#2c0720" },
+    gruvbox: { name: "Gruvbox", background: "#282828", text: "#ebdbb2", primary: "#fabd2f", contrast: "#3c3836", contrast2: "#1d2021" },
+    arch: { name: "Arch Linux", background: "#1793d1", text: "#ffffff", primary: "#333333", contrast: "#0f5f88", contrast2: "#0c4b6c" },
+    kali: { name: "Kali Linux", background: "#000000", text: "#ffffff", primary: "#2f8dff", contrast: "#1a1a1a", contrast2: "#0d0d0d" },
+    manjaro: { name: "Manjaro", background: "#2d3133", text: "#eeeeee", primary: "#35bf5c", contrast: "#3b444b", contrast2: "#1f2324" },
+    dracula: { name: "Dracula", background: "#282a36", text: "#f8f8f2", primary: "#bd93f9", contrast: "#44475a", contrast2: "#191a21" },
+    solarized: { name: "Solarized Dark", background: "#002b36", text: "#839496", primary: "#268bd2", contrast: "#073642", contrast2: "#001e26" },
+    fedora: { name: "Fedora", background: "#294172", text: "#ffffff", primary: "#ffffff", contrast: "#3c6eb4", contrast2: "#1e2f53" }
 };
 
 let userData = JSON.parse(localStorage.getItem("naxstart_data")) || defaultData;
