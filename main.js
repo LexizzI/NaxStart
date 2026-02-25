@@ -53,7 +53,9 @@ const quotes = [
     "A man chooses, a slave obeys.",
     "Wake up, Samurai. We have a city to burn.",
     "Protocol 3: Protect the Pilot.",
-    "Hesitation is defeat."
+    "Hesitation is defeat.",
+    "Hræðsla kømr at óvær, en coratge støðr af várr",
+    "No gods, no masters",
 ];
 
 const themes = {
