@@ -63,9 +63,6 @@ body, html {
 
 }
 
-#welcomeMessageText {
-    transition: opacity 0.2s ease-in-out;
-}
 
 .quote-box {
     color: var(--primary); 
