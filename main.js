@@ -149,32 +149,93 @@ function generateSettingsUI() {
     if (!container) return;
     container.innerHTML = "";
 
+    const addSectionBtn = document.createElement("button");
+    addSectionBtn.textContent = "+ ADD NEW SECTION";
+    addSectionBtn.style.cssText = "width:100%; background:var(--text); color:var(--background); border:none; padding:8px; border-radius:4px; font-weight:bold; cursor:pointer; margin-bottom:20px; font-size:11px;";
+    addSectionBtn.onclick = addSection;
+    container.appendChild(addSectionBtn);
+
     for (const key in userData) {
         const group = document.createElement("div");
-        group.style.marginBottom = "20px";
-        group.innerHTML = `<input type="text" value="${userData[key].title}" oninput="updateTitle('${key}', this.value)" style="background:transparent; color:var(--primary); border:none; border-bottom:1px solid var(--primary); width:100%; font-weight:bold; margin-bottom:10px;">`;
+        group.style.cssText = "margin-bottom:25px; border-left: 2px solid var(--primary); padding-left:10px;";
+        
+        const header = document.createElement("div");
+        header.style.cssText = "display:flex; gap:5px; margin-bottom:10px;";
+        header.innerHTML = `
+            <input type="text" value="${userData[key].title}" oninput="updateTitle('${key}', this.value)" style="background:transparent; color:var(--primary); border:none; border-bottom:1px solid var(--primary); flex-grow:1; font-weight:bold;">
+            <button onclick="deleteSection('${key}')" style="background:transparent; color:#ff5555; border:1px solid #ff5555; cursor:pointer; font-size:10px; border-radius:3px; padding:0 5px;">DEL</button>
+        `;
+        group.appendChild(header);
 
         userData[key].links.forEach((link, i) => {
             const row = document.createElement("div");
-            row.style.cssText = "background:var(--contrast); padding:5px; border-radius:5px; margin-bottom:5px;";
+            row.style.cssText = "background:var(--contrast2); padding:8px; border-radius:5px; margin-bottom:8px; border:1px solid var(--contrast); position:relative;";
             row.innerHTML = `
+                <button onclick="removeLink('${key}', ${i})" style="position:absolute; right:-5px; top:-5px; background:#ff5555; color:white; border:none; border-radius:50%; width:15px; height:15px; font-size:10px; cursor:pointer; line-height:1;">×</button>
                 <input type="text" placeholder="Name" value="${link.name || ''}" oninput="updateLink('${key}', ${i}, 'name', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary); margin-bottom:2px;">
                 <input type="text" placeholder="URL" value="${link.url}" oninput="updateLink('${key}', ${i}, 'url', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary); margin-bottom:2px;">
-                <input type="text" placeholder="Icon" value="${link.img}" oninput="updateLink('${key}', ${i}, 'img', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary);">
+                <input type="text" placeholder="Icon path" value="${link.img}" oninput="updateLink('${key}', ${i}, 'img', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary);">
             `;
             group.appendChild(row);
         });
+
+        const addLinkBtn = document.createElement("button");
+        addLinkBtn.textContent = `+ Add Link (${userData[key].links.length}/8)`;
+        addLinkBtn.style.cssText = "width:100%; background:transparent; color:var(--text); border:1px dashed var(--primary); padding:5px; font-size:10px; cursor:pointer; margin-top:5px;";
+        addLinkBtn.onclick = () => addLink(key);
+        
+        if (userData[key].links.length >= 8) {
+            addLinkBtn.style.opacity = "0.5";
+            addLinkBtn.style.cursor = "not-allowed";
+            addLinkBtn.textContent = "Limit Reached (8/8)";
+        }
+        
+        group.appendChild(addLinkBtn);
         container.appendChild(group);
     }
 
     const actions = document.createElement("div");
     actions.innerHTML = `
-        <button onclick="exportJSON()" style="width:100%; background:var(--primary); color:var(--background); border:none; padding:8px; border-radius:4px; font-weight:bold; cursor:pointer; margin-top:10px;">SAVE CONFIG</button>
-        <label style="display:block; width:100%; text-align:center; margin-top:5px; cursor:pointer; border:1px solid var(--primary); font-size:10px; padding:3px;">
-            LOAD CONFIG <input type="file" accept=".json" onchange="importJSON(event)" style="display:none;">
+        <button onclick="exportJSON()" style="width:100%; background:var(--primary); color:var(--background); border:none; padding:8px; border-radius:4px; font-weight:bold; cursor:pointer; margin-top:10px;">SAVE TO FILE (.JSON)</button>
+        <label style="display:block; width:100%; text-align:center; margin-top:5px; cursor:pointer; border:1px solid var(--primary); font-size:10px; padding:3px; color:var(--text);">
+            LOAD FROM FILE <input type="file" accept=".json" onchange="importJSON(event)" style="display:none;">
         </label>
     `;
     container.appendChild(actions);
+}
+
+function addLink(key) {
+    if (userData[key].links.length >= 8) {
+        alert("Maximum 8 links per section to keep the UI clean!");
+        return;
+    }
+    userData[key].links.push({ name: "New Link", url: "", img: "" });
+    save();
+    generateSettingsUI();
+}
+
+function removeLink(key, index) {
+    userData[key].links.splice(index, 1);
+    save();
+    generateSettingsUI();
+}
+
+function addSection() {
+    const id = "section_" + Date.now();
+    userData[id] = {
+        title: "New Section",
+        links: [{ name: "", url: "", img: "" }]
+    };
+    save();
+    generateSettingsUI();
+}
+
+function deleteSection(key) {
+    if (confirm(`Delete section "${userData[key].title}"?`)) {
+        delete userData[key];
+        save();
+        generateSettingsUI();
+    }
 }
 
 function updateTitle(key, val) { userData[key].title = val; save(); }
