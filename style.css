@@ -1,5 +1,3 @@
-/* document properties*/
-
 *,
 *::after,
 *::before {
@@ -18,7 +16,6 @@ body{
     transition: background-color 1s;
     color: var(--text);
     display: flex;
-
 }
 
 body, html {
@@ -37,9 +34,6 @@ body, html {
     align-items: center;
     flex-wrap: wrap;
 }
-
-
-/* content section*/
 
 .selector{
     margin-top: 0.5em;
@@ -60,9 +54,7 @@ body, html {
     overflow: hidden;
     width: 100%;
     text-align: center;
-
 }
-
 
 .quote-box {
     color: var(--primary); 
@@ -73,20 +65,16 @@ body, html {
     font-style: italic;
     height: 1.2em;
     width: 100%;
-
 }
 
 .link-section {
     background-color: var(--contrast2);
     transition: background-color 1s;
     box-shadow: 0px 0px 30px #000000;
-
-
 }
 
 .link-section-name img {
     color: var(--text);
-
 }
 
 .page-link {
@@ -95,12 +83,13 @@ body, html {
 }
 
 .page-link:hover {
-    transform: scale(1.1,);
+    transform: scale(1.1);
     background-color: var(--primary);
     box-shadow: 0px 0px 20px var(--primary);
-    .link-img {
-        padding: 5px;
-    }
+}
+
+.page-link:hover .link-img {
+    padding: 5px;
 }
 
 .links-block {
@@ -119,7 +108,6 @@ body, html {
     flex-wrap: wrap;
     flex-direction: column;
     gap: 1em;
-    
 }
 
 .link-section-name {
@@ -156,7 +144,7 @@ body, html {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 1em
+    gap: 1em;
 }
 
 .page-link {
@@ -170,31 +158,6 @@ body, html {
     width: 100%;
     transition: padding 0.3s;
     filter: grayscale(var(--text));
-}
-
-.home-title {
-    height: 1em;
-    font-family: "Ubuntu", sans-serif;
-    font-size: 3.5vw;
-}
-
-.block {
-    width: 15em;
-    height: 15em;
-    display: flex;
-    flex-direction: row;
-    margin-inline-start: 3em;
-}
-
-.block-title {
-    font-family: "Ubuntu", sans-serif;
-    font-size: 1vw;
-}
-
-.link-column {
-    width: 7.5em;
-    height: 100%;
-    margin-block-start: 5em;
 }
 
 .footer {
@@ -218,7 +181,7 @@ body, html {
     fill: var(--contrast);
 }
 
-.settings-panel{
+.settings-panel {
    position: fixed;
     bottom: 20px;
     right: 20px;
@@ -230,19 +193,6 @@ body, html {
     font-family: "Ubuntu", sans-serif;
     border: 1px solid var(--primary);
     z-index: 1000;
-}
-
-.settings-title {
-    font-family: "Ubuntu", sans-serif;
-    font-size: 0.5em;
-    transition: background-color 1s;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.settings-panel {
     display: none;
 }
 
@@ -250,79 +200,101 @@ body, html {
     display: block !important;
 }
 
-
 #settings-controls {
     max-height: 450px;
     overflow-y: auto;
     padding-right: 10px;
 }
 
-/* Responsividad para móviles */
+.hidden { display: none !important; }
+
+.mobile-only { display: none; }
+
 @media (max-width: 768px) {
+    body, html {
+        height: auto;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
     body {
-        padding: 10px;
+        padding: 20px 10px;
+    }
+
+    .content--wrapper {
+        height: auto;
+        width: 100%;
+        flex-wrap: nowrap;
     }
 
     .welcome-message {
-        font-size: 1.5em; /* Texto más pequeño para que no rompa línea */
+        font-size: 1.5em;
         margin-bottom: 1em;
     }
 
-    #quote-box {
-        font-size: 0.9em;
-        margin-bottom: 1.5em;
-        padding: 0 10px;
+    .links-block {
+        flex-direction: column;
+        gap: 30px;
+        width: 100%;
     }
 
-    .links-block {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
+    .link-section {
+        width: 90%;
     }
 
     .link-section__grid {
-        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); /* Iconos más compactos */
-        gap: 10px;
-        justify-items: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 12px;
+    }
+
+    .page-link {
+        width: 100%;
+        height: 4.5em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .link-img {
-        width: 45px; /* Iconos ligeramente más pequeños en móvil */
-        height: 45px;
+        width: 40px;
+        height: 40px;
     }
 
-    /* Ajustes para el panel de configuración en móvil */
-    #settings-panel {
+    .footer {
+        margin-top: 3em;
+        height: auto;
+        gap: 10px;
+    }
+
+    .footer_img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .settings-panel {
         width: 90% !important;
-        right: 5% !important;
         left: 5% !important;
-        padding: 15px;
+        right: 5% !important;
+        max-height: 70vh;
+        overflow-y: auto;
     }
-}
 
-.page-link:active {
-    transform: scale(0.9); /* Feedback visual al tocar el icono */
-    transition: transform 0.1s;
-}
-
-.mobile-only {
-    display: none;
-}
-
-@media (max-width: 768px) {
     .mobile-only {
-        display: block;
+        display: flex;
         position: fixed;
         bottom: 20px;
         right: 20px;
         background: var(--primary);
         color: var(--background);
-        border: none;
         border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        font-size: 24px;
-        z-index: 1000;
+        width: 55px;
+        height: 55px;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 }
