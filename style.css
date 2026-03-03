@@ -256,3 +256,73 @@ body, html {
     overflow-y: auto;
     padding-right: 10px;
 }
+
+/* Responsividad para móviles */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .welcome-message {
+        font-size: 1.5em; /* Texto más pequeño para que no rompa línea */
+        margin-bottom: 1em;
+    }
+
+    #quote-box {
+        font-size: 0.9em;
+        margin-bottom: 1.5em;
+        padding: 0 10px;
+    }
+
+    .links-block {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .link-section__grid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); /* Iconos más compactos */
+        gap: 10px;
+        justify-items: center;
+    }
+
+    .link-img {
+        width: 45px; /* Iconos ligeramente más pequeños en móvil */
+        height: 45px;
+    }
+
+    /* Ajustes para el panel de configuración en móvil */
+    #settings-panel {
+        width: 90% !important;
+        right: 5% !important;
+        left: 5% !important;
+        padding: 15px;
+    }
+}
+
+.page-link:active {
+    transform: scale(0.9); /* Feedback visual al tocar el icono */
+    transition: transform 0.1s;
+}
+
+.mobile-only {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-only {
+        display: block;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--primary);
+        color: var(--background);
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        z-index: 1000;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+}

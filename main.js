@@ -113,6 +113,8 @@ function initThemeSystem() {
     }
 }
 
+
+
 function renderLinks() {
     const mainContainer = document.querySelector(".links-block");
     if (!mainContainer) return;
@@ -142,6 +144,11 @@ function initQuoteSystem() {
         const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
         quoteContainer.textContent = randomQuote;
     }
+}
+
+function toggleSettings() {
+    const panel = document.getElementById("settings-panel");
+    if (panel) panel.classList.toggle("active");
 }
 
 function generateSettingsUI() {
