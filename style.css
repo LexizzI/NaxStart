@@ -1,328 +1,240 @@
-/* document properties*/
-
 *,
 *::after,
 *::before {
-  box-sizing: inherit;
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
   border: 0;
 }
 
-html {
-    box-sizing: border-box;
+html, body {
+    width: 100%;
+    overflow-x: hidden;
 }
 
-body{
+body {
     background-color: var(--background);
     transition: background-color 1s;
     color: var(--text);
     display: flex;
-
-}
-
-body, html {
-    width: 100svw;
-    height: 100svh;
-    display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
 }
 
 .content--wrapper {
     display: flex;
     flex-direction: column;
-    width: 100svw;
-    height: 100svh;
+    width: 100%;
+    max-width: 1200px;
+    min-height: 100vh;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
-}
-
-
-/* content section*/
-
-.selector{
-    margin-top: 0.5em;
-    margin-left: 1em;
-    width: 10em;
-    height: 2em;
-    font-family: "Ubuntu", sans-serif;
-    background-color: var(--background);
-    color: var(--text);
+    padding: 20px 20px 40px 20px;
 }
 
 .welcome-message {
     font-family: "Ubuntu", sans-serif;
     font-size: 2em;
-    margin-bottom: 2em;
-    transition: background-color 1s;
-    min-height: 1.2em;
-    overflow: hidden;
+    margin-bottom: 1.5em;
     width: 100%;
     text-align: center;
-
 }
-
 
 .quote-box {
     color: var(--primary); 
     font-family: 'Ubuntu', sans-serif; 
-    font-size: 0.7em;
+    font-size: 0.75em;
     text-align: center; 
     margin-top: 20px; 
     font-style: italic;
-    height: 1.2em;
     width: 100%;
+}
 
+.links-block {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5em;
+    width: 100%;
 }
 
 .link-section {
     background-color: var(--contrast2);
     transition: background-color 1s;
-    box-shadow: 0px 0px 30px #000000;
-
-
-}
-
-.link-section-name img {
-    color: var(--text);
-
-}
-
-.page-link {
-    background-color: var(--contrast);
-    transition: background-color 0.5s, box-shadow 1s;
-}
-
-.page-link:hover {
-    transform: scale(1.1,);
-    background-color: var(--primary);
-    box-shadow: 0px 0px 20px var(--primary);
-    .link-img {
-        padding: 5px;
-    }
-}
-
-.links-block {
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.5);
+    padding: 1.5em;
+    border-radius: 12px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2.5em;
-}
-
-.link-section {
-    padding: 1em;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
     flex-direction: column;
+    align-items: center;
     gap: 1em;
-    
 }
 
 .link-section-name {
-    display: flex;
-    align-items: center;
-    gap: 0.20em;
-    justify-content: center;
     font-family: "Ubuntu", sans-serif;
-    font-size: 2em;
-    position: relative;
-}
-
-.link-section-name::before {
-    content: "";
-    position: absolute;
-    height: 0.3em;
-    width: 110%;
-    left: 50%;
-    transform: translate(-50%, 0);
-    bottom: 0;
-    transition: height 0.5s;
-}
-
-.link-section-name:hover::before {
-    height: 0.6em;
-}
-
-.link-section-name img {
-    height: 1em;
-    aspect-ratio: 1/1;
+    font-size: 1.8em;
+    color: var(--primary);
+    margin-bottom: 0.5em;
 }
 
 .link-section__grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 1em
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1em;
 }
 
 .page-link {
+    background-color: var(--contrast);
+    transition: all 0.3s ease;
     width: 7em;
     height: 7em;
     border-radius: 10px;
-    padding: 1em;
+    padding: 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.page-link:hover {
+    transform: translateY(-5px);
+    background-color: var(--primary);
+    box-shadow: 0px 5px 15px var(--primary);
 }
 
 .link-img {
     width: 100%;
-    transition: padding 0.3s;
-    filter: grayscale(var(--text));
-}
-
-.home-title {
-    height: 1em;
-    font-family: "Ubuntu", sans-serif;
-    font-size: 3.5vw;
-}
-
-.block {
-    width: 15em;
-    height: 15em;
-    display: flex;
-    flex-direction: row;
-    margin-inline-start: 3em;
-}
-
-.block-title {
-    font-family: "Ubuntu", sans-serif;
-    font-size: 1vw;
-}
-
-.link-column {
-    width: 7.5em;
     height: 100%;
-    margin-block-start: 5em;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
 }
 
 .footer {
-    height: 2em;
     width: 100%;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
     align-items: center;
-    margin-top: 5em;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 60px;
+    padding: 20px 0;
 }
 
 .footer_text {
     font-family: "Ubuntu", sans-serif;
-    font-size: 13px;
+    font-size: 14px;
+    color: var(--text);
+    opacity: 0.8;
+    line-height: 1;
 }
 
 .footer_img {
-    width: 18px;
-    height: 15px;
-    fill: var(--contrast);
+    width: 16px;
+    height: 16px;
+    fill: var(--primary);
+    display: block;
 }
 
-.settings-panel{
-   position: fixed;
+.settings-panel {
+    display: none;
+    position: fixed;
     bottom: 20px;
     right: 20px;
     background-color: var(--contrast2); 
     color: var(--text);
     padding: 1.5em;
-    border-radius: 8px;
-    box-shadow: 0px 0px 20px #000000;
+    border-radius: 12px;
+    box-shadow: 0px 0px 30px #000000;
     font-family: "Ubuntu", sans-serif;
     border: 1px solid var(--primary);
     z-index: 1000;
-}
-
-.settings-title {
-    font-family: "Ubuntu", sans-serif;
-    font-size: 0.5em;
-    transition: background-color 1s;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.settings-panel {
-    display: none;
-}
-
-.settings-panel.active {
-    display: block !important;
-}
-
-
-#settings-controls {
-    max-height: 450px;
+    width: 350px;
+    max-height: 70vh;
     overflow-y: auto;
-    padding-right: 10px;
 }
 
-/* Responsividad para móviles */
-@media (max-width: 768px) {
+.settings-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.settings-panel::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+.settings-panel.active { 
+    display: block !important; 
+}
+
+@media (max-width: 600px) {
     body {
-        padding: 10px;
+        justify-content: flex-start;
+        padding-top: 3em;
     }
 
-    .welcome-message {
-        font-size: 1.5em; /* Texto más pequeño para que no rompa línea */
-        margin-bottom: 1em;
-    }
-
-    #quote-box {
-        font-size: 0.9em;
-        margin-bottom: 1.5em;
-        padding: 0 10px;
+    .content--wrapper {
+        padding: 10px 10px 40px 10px;
     }
 
     .links-block {
-        display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 2em;
+    }
+
+    .link-section {
+        width: 90%;
     }
 
     .link-section__grid {
-        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); /* Iconos más compactos */
-        gap: 10px;
-        justify-items: center;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
     }
 
-    .link-img {
-        width: 45px; /* Iconos ligeramente más pequeños en móvil */
-        height: 45px;
+    .page-link {
+        width: 100%;
+        height: 4.5em;
     }
 
-    /* Ajustes para el panel de configuración en móvil */
-    #settings-panel {
-        width: 90% !important;
-        right: 5% !important;
-        left: 5% !important;
-        padding: 15px;
+    .footer {
+        flex-direction: column;
+        margin-top: 40px;
+        gap: 12px;
     }
-}
 
-.page-link:active {
-    transform: scale(0.9); /* Feedback visual al tocar el icono */
-    transition: transform 0.1s;
-}
+    .footer_text {
+        font-size: 12px;
+    }
 
-.mobile-only {
-    display: none;
-}
+    .footer_img {
+        width: 20px;
+        height: 20px;
+    }
 
-@media (max-width: 768px) {
-    .mobile-only {
-        display: block;
+    .settings-panel {
+        width: 95%;
+        right: 2.5%;
+        left: 2.5%;
+        bottom: 15px;
+        max-height: 80vh;
+    }
+
+    #mobile-settings-btn {
+        display: flex !important;
         position: fixed;
         bottom: 20px;
         right: 20px;
+        width: 55px;
+        height: 55px;
         background: var(--primary);
-        color: var(--background);
-        border: none;
         border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        font-size: 24px;
-        z-index: 1000;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     }
 }
+
+.hidden { display: none !important; }
