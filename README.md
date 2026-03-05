@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> **Known Issue:** The "Hide Reminders" toggle button is currently non-functional. This has been acknowledged and is listed as a high-priority fix for the next update.
+
 # NaxStart
 
 NaxStart is a minimalist startpage focused on privacy and customization through local configuration.
@@ -5,6 +8,7 @@ NaxStart is a minimalist startpage focused on privacy and customization through 
 ## Core Features
 
 * **Link Management**: Organization of bookmarks by sections with a strict 8-link limit per block to maintain visual clarity.
+* **Agenda & Reminders (New)**: Integrated task management system that displays active reminders directly on your dashboard.
 * **Privacy**: Data is stored exclusively in LocalStorage. No database or external server connection required.
 * **Real-time Customization**: Integrated settings interface to modify titles, URLs, and icons instantly.
 * **Portability**: Built-in functions to export and import the entire configuration as a JSON file.
@@ -29,10 +33,16 @@ The system features color palettes based on popular development environments and
 * Gruvbox
 * Tokyo Night
 * Rosé Pine
+* Catppuccin
+* Everforest
+* Solarized Dark
 
 ### Gaming Aesthetics
 * Cyberpunk 2077
 * Fallout (Vault-Tec)
+* DOOM Eternal
+* Master Chief (Halo)
+* Aperture Science (Portal)
 
 ## Keyboard Shortcuts
 
@@ -43,4 +53,8 @@ The system features color palettes based on popular development environments and
 1. Download the repository files.
 2. Open `index.html` in any web browser.
 3. Use the settings panel (Press **S**) to add sections and links.
-4. Recommended for use with "Custom New Tab" extensions to set NaxStart as the default homepage.
+4. Access the **Agenda** trigger to manage your daily tasks and reminders.
+5. Recommended for use with "Custom New Tab" extensions to set NaxStart as the default homepage.
+
+---
+Made with ❤️ by **Lexizz & Contributors**
