@@ -55,19 +55,24 @@ function apply_theme(theme) {
     root.style.setProperty("--contrast2", theme.contrast2);
 }
 
-// --- HIDE REMINDERS (FORCE FIX) ---
 window.toggleRemindersVisibility = function() {
     remindersVisible = !remindersVisible;
     const mainArea = document.getElementById('main-reminders-area');
     const btn = document.getElementById('hide-reminders-btn');
     
     if (mainArea) {
-        // Forzamos el cambio de estilo ignorando cualquier regla de CSS externa
+        // Usamos setProperty con important para que el CSS no pueda rechazarlo
         mainArea.style.setProperty('display', remindersVisible ? 'flex' : 'none', 'important');
         if(btn) btn.innerText = remindersVisible ? "Hide Reminders" : "Show Reminders";
     }
 };
 
+document.addEventListener("DOMContentLoaded", () => {
+    const hideBtn = document.getElementById('hide-reminders-btn');
+    if (hideBtn) {
+        hideBtn.onclick = window.toggleRemindersVisibility;
+    }
+});
 // --- AGENDA & TASKS ---
 window.toggleAgenda = function() {
     document.getElementById('agenda-sidebar').classList.toggle('sidebar-hidden');
@@ -176,7 +181,7 @@ function setupHoverEffect() {
 document.addEventListener("DOMContentLoaded", () => {
     const themeSelector = document.getElementById("themeSelector");
     if (themeSelector) {
-        themeSelector.innerHTML = ""; // Limpiar antes de rellenar
+        themeSelector.innerHTML = "";
         for (const key in themes) {
             const opt = document.createElement("option");
             opt.value = key; opt.textContent = themes[key].name;

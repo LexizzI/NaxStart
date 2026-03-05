@@ -344,7 +344,6 @@ body, html {
     color: var(--background);
 }
 
-/* Hide agenda elements on mobile to keep design clean */
 @media (max-width: 768px) {
     .sidebar, .pc-trigger {
         display: none !important;
@@ -361,11 +360,9 @@ body, html {
     flex-direction: column;
     gap: 10px;
     pointer-events: none;
-    /* Max height and scroll functionality */
     max-height: 85vh;
 }
 
-/* Scroll container for reminders */
 .reminders-scroll-container {
     display: flex;
     flex-direction: column;
@@ -375,7 +372,6 @@ body, html {
     pointer-events: auto;
 }
 
-/* Hide functionality */
 
 .reminder-card {
     pointer-events: auto;
@@ -405,12 +401,10 @@ body, html {
     word-wrap: break-word;
 }
 
-/* Clase para ocultar los recordatorios */
 .reminders-hidden {
     display: none !important;
 }
 
-/* Custom scrollbar for reminders */
 .reminders-scroll-container::-webkit-scrollbar {
     width: 4px;
 }
@@ -425,9 +419,8 @@ body, html {
     to { opacity: 1; transform: translateX(0); }
 }
 
-/* Sidebar scroll area */
 .tasks-scroll-area {
-    max-height: calc(100vh - 380px); /* Adjust based on your header/input height */
+    max-height: calc(100vh - 380px); 
     overflow-y: auto;
     padding-right: 10px;
     margin-top: 15px;
@@ -454,7 +447,6 @@ body, html {
     to { opacity: 1; transform: translateX(0); }
 }
 
-/* Ocultar en móvil para mantener la limpieza */
 @media (max-width: 768px) {
     .reminders-overlay {
         display: none !important;
@@ -551,4 +543,15 @@ body, html {
         z-index: 2000;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
+}
+
+#hide-reminders-btn {
+    position: relative !important;
+    z-index: 9999 !important; 
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+.reminders-overlay div {
+    pointer-events: auto !important;
 }
