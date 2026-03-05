@@ -54,6 +54,7 @@ function apply_theme(theme) {
     root.style.setProperty("--contrast2", theme.contrast2);
 }
 
+// --- LINKS LOGIC ---
 window.updateLink = function(sectionKey, index) {
     const nameVal = document.getElementById(`edit-name-${sectionKey}-${index}`).value;
     const urlVal = document.getElementById(`edit-url-${sectionKey}-${index}`).value;
@@ -126,6 +127,99 @@ window.importConfig = function(event) {
     reader.readAsText(event.target.files[0]);
 };
 
+// --- AGENDA LOGIC (CORRECTED TO MATCH YOUR HTML) ---
+window.saveTask = function() {
+    const idField = document.getElementById('task-edit-id');
+    const titleField = document.getElementById('task-input-field');
+    const descField = document.getElementById('task-desc');
+    const dateField = document.getElementById('date-input-field');
+
+    if (!titleField.value) return;
+
+    if (idField.value) {
+        // Edit existing
+        const task = agendaData.find(t => t.id == idField.value);
+        if (task) {
+            task.title = titleField.value;
+            task.desc = descField.value;
+            task.date = dateField.value;
+        }
+    } else {
+        // Add new
+        const newTask = {
+            id: Date.now(),
+            title: titleField.value,
+            desc: descField.value,
+            date: dateField.value
+        };
+        agendaData.push(newTask);
+    }
+
+    localStorage.setItem('nax-agenda-data', JSON.stringify(agendaData));
+    
+    // Reset fields
+    idField.value = "";
+    titleField.value = "";
+    descField.value = "";
+    dateField.value = "";
+    document.getElementById('task-save-btn').textContent = "Add Entry";
+
+    renderAgenda();
+};
+
+window.removeTask = function(id) {
+    agendaData = agendaData.filter(t => t.id !== id);
+    localStorage.setItem('nax-agenda-data', JSON.stringify(agendaData));
+    renderAgenda();
+};
+
+window.editTask = function(id) {
+    const task = agendaData.find(t => t.id === id);
+    if (!task) return;
+    
+    document.getElementById('task-edit-id').value = task.id;
+    document.getElementById('task-input-field').value = task.title;
+    document.getElementById('task-desc').value = task.desc;
+    document.getElementById('date-input-field').value = task.date || "";
+    document.getElementById('task-save-btn').textContent = "Update Entry";
+};
+
+function renderAgenda() {
+    const sidebarList = document.getElementById('tasks-list');
+    const mainArea = document.getElementById('main-reminders-area');
+    
+    if (sidebarList) {
+        sidebarList.innerHTML = "";
+        agendaData.forEach(task => {
+            const item = document.createElement('div');
+            item.className = 'task-item';
+            item.innerHTML = `
+                <div style="font-weight:bold; color:var(--primary);">${task.title}</div>
+                <div style="font-size:0.75em; opacity:0.7;">${task.desc}</div>
+                ${task.date ? `<div class="task-date">${task.date}</div>` : ''}
+                <div style="margin-top:8px; display:flex; gap:5px;">
+                    <button onclick="editTask(${task.id})" style="font-size:10px; color:var(--text); background:none; border:1px solid var(--contrast); cursor:pointer; padding:2px 5px;">EDIT</button>
+                    <button onclick="removeTask(${task.id})" style="font-size:10px; color:var(--primary); background:none; border:1px solid var(--primary); cursor:pointer; padding:2px 5px;">DEL</button>
+                </div>`;
+            sidebarList.appendChild(item);
+        });
+    }
+
+    if (mainArea) {
+        mainArea.innerHTML = "";
+        agendaData.forEach(task => {
+            const reminder = document.createElement('div');
+            reminder.className = 'reminder-card';
+            reminder.innerHTML = `
+                <span class="reminder-title">${task.title}</span>
+                <span class="reminder-desc-text">${task.desc}</span>
+            `;
+            mainArea.appendChild(reminder);
+        });
+    }
+}
+
+// --- UI RENDERERS ---
 function renderSettings() {
     const container = document.getElementById("settings-controls");
     if (!container) return;
@@ -190,6 +284,7 @@ function renderLinks() {
     setupHoverEffect();
 }
 
+// --- UTILS ---
 window.toggleRemindersVisibility = () => {
     remindersVisible = !remindersVisible;
     const mainArea = document.getElementById('main-reminders-area');
@@ -197,24 +292,6 @@ window.toggleRemindersVisibility = () => {
 };
 
 window.toggleAgenda = () => document.getElementById('agenda-sidebar').classList.toggle('sidebar-hidden');
-
-function renderAgenda() {
-    const sidebarList = document.getElementById('tasks-list');
-    const mainArea = document.getElementById('main-reminders-area');
-    if (sidebarList) sidebarList.innerHTML = "";
-    if (mainArea) mainArea.innerHTML = "";
-    agendaData.forEach(task => {
-        const item = document.createElement('div');
-        item.className = 'task-item';
-        item.innerHTML = `<div style="font-weight:bold;">${task.title}</div><div style="font-size:0.75em; opacity:0.7;">${task.desc}</div>`;
-        if (sidebarList) sidebarList.appendChild(item);
-        const reminder = document.createElement('div');
-        reminder.className = 'reminder-card';
-        reminder.innerHTML = `<span class="reminder-title">${task.title}</span>`;
-        if (mainArea) mainArea.appendChild(reminder);
-    });
-}
-
 window.toggleSettings = () => document.getElementById("settings-panel").classList.toggle("active");
 
 function setupHoverEffect() {
