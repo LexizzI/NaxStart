@@ -1,9 +1,9 @@
 "use strict";
 
 const defaultData = {
-    work: { title: "Work", links: [{ name: "Mail", url: "https://mail.google.com", img: "img/mail.png" }, { name: "GitHub", url: "https://github.com", img: "img/github.png" }, { name: "", url: "", img: "" }, { name: "", url: "", img: "" }] },
-    social: { title: "Social", links: [{ name: "Youtube", url: "https://youtube.com", img: "img/youtube.png" }, { name: "", url: "", img: "" }, { name: "", url: "" , img: "" }, { name: "", url: "", img: "" }] },
-    streaming: { title: "Streaming", links: [{ name: "Netflix", url: "https://netflix.com", img: "img/netflix.png" }, { name: "", url: "", img: "" }, { name: "", url: "", img: "" }, { name: "", url: "", img: "" }] }
+    work: { title: "Work", links: [{ name: "Mail", url: "https://mail.google.com", img: "img/mail.png" }, { name: "GitHub", url: "https://github.com", img: "img/github.png" }] },
+    social: { title: "Social", links: [{ name: "Youtube", url: "https://youtube.com", img: "img/youtube.png" }] },
+    streaming: { title: "Streaming", links: [{ name: "Netflix", url: "https://netflix.com", img: "img/netflix.png" }] }
 };
 
 const quotes = [
@@ -45,7 +45,6 @@ let userData = JSON.parse(localStorage.getItem("naxstart_data")) || defaultData;
 let agendaData = JSON.parse(localStorage.getItem('nax-agenda-data')) || [];
 let remindersVisible = true;
 
-// --- THEME SYSTEM ---
 function apply_theme(theme) {
     const root = document.documentElement;
     root.style.setProperty("--background", theme.background);
@@ -55,93 +54,120 @@ function apply_theme(theme) {
     root.style.setProperty("--contrast2", theme.contrast2);
 }
 
-window.toggleRemindersVisibility = function() {
-    remindersVisible = !remindersVisible;
-    const mainArea = document.getElementById('main-reminders-area');
-    const btn = document.getElementById('hide-reminders-btn');
-    
-    if (mainArea) {
-        // Usamos setProperty con important para que el CSS no pueda rechazarlo
-        mainArea.style.setProperty('display', remindersVisible ? 'flex' : 'none', 'important');
-        if(btn) btn.innerText = remindersVisible ? "Hide Reminders" : "Show Reminders";
+window.updateLink = function(sectionKey, index) {
+    const nameVal = document.getElementById(`edit-name-${sectionKey}-${index}`).value;
+    const urlVal = document.getElementById(`edit-url-${sectionKey}-${index}`).value;
+    const imgVal = document.getElementById(`edit-img-${sectionKey}-${index}`).value;
+    userData[sectionKey].links[index] = { name: nameVal, url: urlVal, img: imgVal };
+    localStorage.setItem("naxstart_data", JSON.stringify(userData));
+    renderLinks();
+};
+
+window.addLinkToSection = function(sectionKey) {
+    if (userData[sectionKey].links.length >= 8) {
+        alert("Limit of 8 links reached for this section.");
+        return;
+    }
+    userData[sectionKey].links.push({ name: "", url: "", img: "" });
+    localStorage.setItem("naxstart_data", JSON.stringify(userData));
+    renderSettings();
+    renderLinks();
+};
+
+window.removeLinkFromSection = function(sectionKey, index) {
+    userData[sectionKey].links.splice(index, 1);
+    localStorage.setItem("naxstart_data", JSON.stringify(userData));
+    renderSettings();
+    renderLinks();
+};
+
+window.updateSectionTitle = function(key) {
+    const newTitle = document.getElementById(`edit-section-title-${key}`).value;
+    if (!newTitle) return;
+    userData[key].title = newTitle;
+    localStorage.setItem("naxstart_data", JSON.stringify(userData));
+    renderLinks();
+};
+
+window.addSection = function() {
+    const sectionName = prompt("New Section Title:");
+    if (!sectionName) return;
+    const key = sectionName.toLowerCase().replace(/\s+/g, '_') + Date.now();
+    userData[key] = { title: sectionName, links: [{ name: "", url: "", img: "" }] };
+    localStorage.setItem("naxstart_data", JSON.stringify(userData));
+    renderLinks();
+    renderSettings();
+};
+
+window.removeSection = function(key) {
+    if (confirm(`Delete entire section "${userData[key].title}"?`)) {
+        delete userData[key];
+        localStorage.setItem("naxstart_data", JSON.stringify(userData));
+        renderLinks();
+        renderSettings();
     }
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-    const hideBtn = document.getElementById('hide-reminders-btn');
-    if (hideBtn) {
-        hideBtn.onclick = window.toggleRemindersVisibility;
+window.exportConfig = function() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userData));
+    const dl = document.createElement('a');
+    dl.setAttribute("href", dataStr);
+    dl.setAttribute("download", "naxstart_backup.json");
+    dl.click();
+};
+
+window.importConfig = function(event) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        userData = JSON.parse(e.target.result);
+        localStorage.setItem("naxstart_data", JSON.stringify(userData));
+        location.reload(); 
+    };
+    reader.readAsText(event.target.files[0]);
+};
+
+function renderSettings() {
+    const container = document.getElementById("settings-controls");
+    if (!container) return;
+    container.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--primary);">
+            <button onclick="addSection()" style="grid-column: span 2; background: var(--primary); color: var(--background); padding: 10px; cursor: pointer; font-weight: bold; border-radius: 4px; letter-spacing: 1px;">+ CREATE NEW SECTION</button>
+            <button onclick="exportConfig()" style="background: var(--contrast); color: var(--text); border: 1px solid var(--primary); padding: 8px; cursor: pointer; font-size: 0.8em; border-radius: 4px;">⬇ EXPORT JSON</button>
+            <button onclick="document.getElementById('file-import').click()" style="background: var(--contrast); color: var(--text); border: 1px solid var(--primary); padding: 8px; cursor: pointer; font-size: 0.8em; border-radius: 4px;">⬆ IMPORT JSON</button>
+            <input type="file" id="file-import" style="display:none" onchange="importConfig(event)">
+        </div>
+    `;
+    for (const key in userData) {
+        const section = userData[key];
+        const div = document.createElement("div");
+        div.style.marginBottom = "30px";
+        div.style.padding = "10px";
+        div.style.background = "rgba(0,0,0,0.1)";
+        div.style.borderRadius = "8px";
+        div.innerHTML = `
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+                <input type="text" id="edit-section-title-${key}" value="${section.title}" oninput="updateSectionTitle('${key}')" style="flex-grow: 1; background: none; border: 1px solid var(--primary); color: var(--primary); font-weight: bold; padding: 4px; border-radius: 3px;">
+                <button onclick="addLinkToSection('${key}')" style="background: var(--primary); color: var(--background); font-size: 0.7em; padding: 5px 8px; cursor: pointer; border-radius: 3px; font-weight: bold;">+ LINK</button>
+                <button onclick="removeSection('${key}')" style="background: none; color: #ff5555; cursor: pointer; font-size: 0.7em; border: 1px solid #ff5555; padding: 4px; border-radius: 3px;">DEL SEC</button>
+            </div>
+        `;
+        section.links.forEach((link, idx) => {
+            const row = document.createElement("div");
+            row.style.display = "flex";
+            row.style.gap = "6px";
+            row.style.marginBottom = "6px";
+            row.innerHTML = `
+                <input type="text" id="edit-name-${key}-${idx}" value="${link.name}" placeholder="Title" oninput="updateLink('${key}', ${idx})" style="width: 25%; background: var(--background); color: var(--text); border: 1px solid var(--contrast); padding: 6px; border-radius: 3px; font-size: 0.85em;">
+                <input type="text" id="edit-url-${key}-${idx}" value="${link.url}" placeholder="URL" oninput="updateLink('${key}', ${idx})" style="width: 40%; background: var(--background); color: var(--text); border: 1px solid var(--contrast); padding: 6px; border-radius: 3px; font-size: 0.85em;">
+                <input type="text" id="edit-img-${key}-${idx}" value="${link.img}" placeholder="Icon path" oninput="updateLink('${key}', ${idx})" style="width: 25%; background: var(--background); color: var(--text); border: 1px solid var(--contrast); padding: 6px; border-radius: 3px; font-size: 0.85em;">
+                <button onclick="removeLinkFromSection('${key}', ${idx})" style="width: 10%; background: none; color: #ff5555; border: 1px solid #ff5555; cursor: pointer; border-radius: 3px; font-weight: bold;">×</button>
+            `;
+            div.appendChild(row);
+        });
+        container.appendChild(div);
     }
-});
-// --- AGENDA & TASKS ---
-window.toggleAgenda = function() {
-    document.getElementById('agenda-sidebar').classList.toggle('sidebar-hidden');
-};
-
-window.saveTask = function() {
-    const titleInput = document.getElementById('task-input-field');
-    const descInput = document.getElementById('task-desc');
-    const dateInput = document.getElementById('date-input-field');
-    const editId = document.getElementById('task-edit-id').value;
-
-    if (!titleInput || titleInput.value.trim() === "") return;
-
-    if (editId) {
-        agendaData = agendaData.map(t => t.id == editId ? {...t, title:titleInput.value, desc:descInput.value, date:dateInput.value} : t);
-        document.getElementById('task-edit-id').value = "";
-        document.getElementById('task-save-btn').innerText = "Add Entry";
-    } else {
-        agendaData.push({id: Date.now(), title: titleInput.value, desc: descInput.value, date: dateInput.value});
-    }
-    
-    localStorage.setItem('nax-agenda-data', JSON.stringify(agendaData));
-    renderAgenda();
-    
-    titleInput.value = ""; descInput.value = ""; dateInput.value = "";
-};
-
-window.removeTask = function(id) {
-    agendaData = agendaData.filter(t => t.id != id);
-    localStorage.setItem('nax-agenda-data', JSON.stringify(agendaData));
-    renderAgenda();
-};
-
-window.editTask = function(id) {
-    const task = agendaData.find(t => t.id == id);
-    if (!task) return;
-    document.getElementById('task-input-field').value = task.title;
-    document.getElementById('task-desc').value = task.desc;
-    document.getElementById('date-input-field').value = task.date;
-    document.getElementById('task-edit-id').value = id;
-    document.getElementById('task-save-btn').innerText = "Update Task";
-};
-
-function renderAgenda() {
-    const sidebarList = document.getElementById('tasks-list');
-    const mainArea = document.getElementById('main-reminders-area');
-    if (sidebarList) sidebarList.innerHTML = "";
-    if (mainArea) mainArea.innerHTML = "";
-
-    agendaData.forEach(task => {
-        const item = document.createElement('div');
-        item.className = 'task-item';
-        item.innerHTML = `
-            <div style="font-weight:bold;">${task.title}</div>
-            <div style="font-size:0.75em; opacity:0.7;">${task.desc}</div>
-            <div style="margin-top:5px;">
-                <button onclick="editTask(${task.id})" style="font-size:10px; color:var(--text); background:none; border:1px solid var(--contrast); cursor:pointer; padding:2px 5px;">EDIT</button>
-                <button onclick="removeTask(${task.id})" style="font-size:10px; color:var(--primary); background:none; border:1px solid var(--primary); cursor:pointer; padding:2px 5px;">DEL</button>
-            </div>`;
-        if (sidebarList) sidebarList.appendChild(item);
-
-        const reminder = document.createElement('div');
-        reminder.className = 'reminder-card';
-        reminder.innerHTML = `<span class="reminder-title">${task.title}</span><span class="reminder-desc-text">${task.desc}</span>`;
-        if (mainArea) mainArea.appendChild(reminder);
-    });
 }
 
-// --- LINKS & SETTINGS ---
 function renderLinks() {
     const mainContainer = document.querySelector(".links-block");
     if (!mainContainer) return;
@@ -164,9 +190,32 @@ function renderLinks() {
     setupHoverEffect();
 }
 
-window.toggleSettings = function() {
-    document.getElementById("settings-panel").classList.toggle("active");
+window.toggleRemindersVisibility = () => {
+    remindersVisible = !remindersVisible;
+    const mainArea = document.getElementById('main-reminders-area');
+    if (mainArea) mainArea.style.display = remindersVisible ? 'flex' : 'none';
 };
+
+window.toggleAgenda = () => document.getElementById('agenda-sidebar').classList.toggle('sidebar-hidden');
+
+function renderAgenda() {
+    const sidebarList = document.getElementById('tasks-list');
+    const mainArea = document.getElementById('main-reminders-area');
+    if (sidebarList) sidebarList.innerHTML = "";
+    if (mainArea) mainArea.innerHTML = "";
+    agendaData.forEach(task => {
+        const item = document.createElement('div');
+        item.className = 'task-item';
+        item.innerHTML = `<div style="font-weight:bold;">${task.title}</div><div style="font-size:0.75em; opacity:0.7;">${task.desc}</div>`;
+        if (sidebarList) sidebarList.appendChild(item);
+        const reminder = document.createElement('div');
+        reminder.className = 'reminder-card';
+        reminder.innerHTML = `<span class="reminder-title">${task.title}</span>`;
+        if (mainArea) mainArea.appendChild(reminder);
+    });
+}
+
+window.toggleSettings = () => document.getElementById("settings-panel").classList.toggle("active");
 
 function setupHoverEffect() {
     const links = document.querySelectorAll(".page-link");
@@ -177,31 +226,27 @@ function setupHoverEffect() {
     });
 }
 
-// --- INITIALIZATION ---
 document.addEventListener("DOMContentLoaded", () => {
     const themeSelector = document.getElementById("themeSelector");
     if (themeSelector) {
-        themeSelector.innerHTML = "";
         for (const key in themes) {
             const opt = document.createElement("option");
             opt.value = key; opt.textContent = themes[key].name;
             themeSelector.appendChild(opt);
         }
         themeSelector.onchange = (e) => {
-            const selected = themes[e.target.value];
-            apply_theme(selected);
+            apply_theme(themes[e.target.value]);
             localStorage.setItem("theme", e.target.value);
         };
         const saved = localStorage.getItem("theme") || "default";
         themeSelector.value = saved;
         apply_theme(themes[saved]);
     }
-
     const qBox = document.getElementById("quote-box");
     if (qBox) qBox.textContent = quotes[Math.floor(Math.random() * quotes.length)];
-    
     renderLinks();
     renderAgenda();
+    renderSettings();
 });
 
 document.addEventListener('keydown', (e) => {
