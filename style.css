@@ -18,6 +18,10 @@ body{
     display: flex;
 }
 
+body.hide-reminders-active #main-reminders-area {
+    display: none !important;
+}
+
 body, html {
     width: 100svw;
     height: 100svh;
@@ -275,6 +279,19 @@ body, html {
     outline: none;
 }
 
+.agenda-desc {
+    background: var(--background);
+    color: var(--text);
+    border: 1px solid var(--contrast);
+    padding: 10px;
+    font-family: "Ubuntu", sans-serif;
+    resize: none;
+    height: 80px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .agenda-input-group input:focus {
     border-color: var(--primary);
 }
@@ -343,11 +360,25 @@ body, html {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    pointer-events: none; /* Permite hacer click a través del contenedor si está vacío */
+    pointer-events: none;
+    /* Max height and scroll functionality */
+    max-height: 85vh;
 }
 
+/* Scroll container for reminders */
+.reminders-scroll-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    padding-right: 8px;
+    pointer-events: auto;
+}
+
+/* Hide functionality */
+
 .reminder-card {
-    pointer-events: auto; /* Permite interactuar con la tarjeta si es necesario */
+    pointer-events: auto;
     background: var(--contrast2);
     border-left: 3px solid var(--primary);
     padding: 12px;
@@ -365,12 +396,58 @@ body, html {
     margin-bottom: 4px;
 }
 
-.reminder-desc {
+.reminder-desc-text {
     color: var(--text);
     font-size: 0.75em;
-    opacity: 0.8;
-    line-height: 1.3;
+    opacity: 0.7;
+    line-height: 1.4;
+    display: block;
+    word-wrap: break-word;
 }
+
+/* Clase para ocultar los recordatorios */
+.reminders-hidden {
+    display: none !important;
+}
+
+/* Custom scrollbar for reminders */
+.reminders-scroll-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.reminders-scroll-container::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Sidebar scroll area */
+.tasks-scroll-area {
+    max-height: calc(100vh - 380px); /* Adjust based on your header/input height */
+    overflow-y: auto;
+    padding-right: 10px;
+    margin-top: 15px;
+}
+
+.tasks-scroll-area::-webkit-scrollbar {
+    width: 4px;
+}
+
+.tasks-scroll-area::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    .reminders-overlay {
+        display: none !important;
+    }
+}
+
 
 @keyframes slideIn {
     from { opacity: 0; transform: translateX(50px); }

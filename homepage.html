@@ -3,80 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="theme/theme.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap">
-  <script type="text/javascript" src="main.js" defer></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap">
+  <script src="main.js" defer></script>
   <title>NaxStart</title>
 </head>
 
 <body>
+  <div class="reminders-overlay">
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
+          <button onclick="toggleRemindersVisibility()" id="hide-reminders-btn" class="sidebar-close-btn" style="background:var(--contrast2); border:1px solid var(--primary); padding:2px 8px; cursor:pointer;">Hide Reminders</button>
+      </div>
+      <div id="main-reminders-area" class="reminders-scroll-container"></div>
+  </div>
 
-<div id="main-reminders-area" class="reminders-overlay"></div>
+  <div id="agenda-sidebar" class="sidebar sidebar-hidden">
+      <div class="sidebar-header">
+          <span class="sidebar-title">Agenda & Tasks</span>
+          <button onclick="toggleAgenda()" class="sidebar-close-btn">Close</button>
+      </div>
+      
+      <div class="agenda-wrapper">
+          <div class="agenda-input-group">
+              <input type="hidden" id="task-edit-id">
+              <input type="text" id="task-input-field" placeholder="Task Title">
+              <textarea id="task-desc" class="agenda-desc" placeholder="Additional details..."></textarea>
+              <input type="datetime-local" id="date-input-field">
+              <button onclick="saveTask()" id="task-save-btn" class="add-task-btn">Add Entry</button>
+          </div>
+          <div id="tasks-list" class="tasks-scroll-area"></div>
+      </div>
+  </div>
 
   <select id="themeSelector" class="selector"></select>
-
   <button id="mobile-settings-btn" onclick="toggleSettings()" class="mobile-only">⚙️</button>
 
-
   <div class="content--wrapper">
+      <button id="agenda-trigger" onclick="toggleAgenda()" class="pc-trigger">Agenda</button>
 
-    <div id="agenda-sidebar" class="sidebar sidebar-hidden">
-    <div class="sidebar-header">
-        <span class="sidebar-title">Agenda & Tasks</span>
-        <button onclick="toggleAgenda()" class="sidebar-close-btn">Close</button>
-    </div>
-    
-    <div class="agenda-wrapper">
-        <div class="agenda-input-group">
-            <input type="hidden" id="task-edit-id">
-            <input type="text" id="task-input" placeholder="Task Title">
-            <textarea id="task-desc" placeholder="Additional details..." style="background:var(--background); color:var(--text); border:1px solid var(--contrast); padding:10px; font-family:inherit; resize:none; height:60px;"></textarea>
-            <input type="datetime-local" id="date-input">
-            <button onclick="saveTask()" id="task-save-btn" class="add-task-btn">Add Entry</button>
-        </div>
-        <div id="tasks-list">
-            </div>
-    </div>
-</div>
+      <header class="welcome-message">
+        <h1 id="welcomeMessageText">Welcome to NaxStart</h1>
+        <div id="quote-box" class="quote-box"></div>
+      </header>
 
-<button id="agenda-trigger" onclick="toggleAgenda()" class="pc-trigger">Agenda</button>
+      <main class="links-block">
+        </main>
 
+      <footer class="footer">
+  <p class="footer_text">
+    Made with <img src="icons/heart.svg" class="footer_img"> by Lexizz & Contributors
+  </p>
+  <p class="footer_text">Wake up girl!!</p>
+</footer>
 
-    <header class="welcome-message">
-      <h1 id="welcomeMessageText">Welcome to NaxStart</h1>
-      <div id="quote-box" class="quote-box"></div>
-    </header>
-
-    <main class="links-block">
-      <section class="link-section">
-        <p class="link-section-name" id="name-work"></p>
-        <div class="link-section__grid" id="grid-work"></div>
-      </section>
-
-      <section class="link-section">
-        <p class="link-section-name" id="name-social"></p>
-        <div class="link-section__grid" id="grid-social"></div>
-      </section>
-
-      <section class="link-section">
-        <p class="link-section-name" id="name-streaming"></p>
-        <div class="link-section__grid" id="grid-streaming"></div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <p class="footer_text">Made with <img src="icons/heart.svg" class="footer_img"> by Lexizz & Contributors</p>
-      <p class="footer_text">Wake up girl!!</p>
-    </footer>
   </div>
 
   <div class="settings-panel" id="settings-panel">
-    <h3 class="settings-title">SETTINGS</h3>
-    <div id="settings-controls"></div>
+      <h3 class="settings-title">SETTINGS</h3>
+      <div id="settings-controls"></div>
   </div>
 </body>
 </html>

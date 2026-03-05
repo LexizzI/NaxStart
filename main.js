@@ -1,61 +1,21 @@
 "use strict";
 
 const defaultData = {
-    work: {
-        title: "Work",
-        links: [
-            { name: "Mail", url: "https://mail.google.com", img: "img/mail.png" },
-            { name: "GitHub", url: "https://github.com", img: "img/github.png" },
-            { name: "", url: "", img: "" }, { name: "", url: "", img: "" }
-        ]
-    },
-    social: {
-        title: "Social",
-        links: [
-            { name: "Youtube", url: "https://youtube.com", img: "img/youtube.png" },
-            { name: "", url: "", img: "" }, { name: "", url: "" , img: "" }, { name: "", url: "", img: "" }
-        ]
-    },
-    streaming: {
-        title: "Streaming",
-        links: [
-            { name: "Netflix", url: "https://netflix.com", img: "img/netflix.png" },
-            { name: "", url: "", img: "" }, { name: "", url: "", img: "" }, { name: "", url: "", img: "" }
-        ]
-    }
+    work: { title: "Work", links: [{ name: "Mail", url: "https://mail.google.com", img: "img/mail.png" }, { name: "GitHub", url: "https://github.com", img: "img/github.png" }, { name: "", url: "", img: "" }, { name: "", url: "", img: "" }] },
+    social: { title: "Social", links: [{ name: "Youtube", url: "https://youtube.com", img: "img/youtube.png" }, { name: "", url: "", img: "" }, { name: "", url: "" , img: "" }, { name: "", url: "", img: "" }] },
+    streaming: { title: "Streaming", links: [{ name: "Netflix", url: "https://netflix.com", img: "img/netflix.png" }, { name: "", url: "", img: "" }, { name: "", url: "", img: "" }, { name: "", url: "", img: "" }] }
 };
 
 const quotes = [
-    "Believe in yourself!",
-    "Stay focused, stay humble.",
-    "Make it happen.",
-    "Small steps every day.",
-    "Your only limit is your mind.",
-    "Keep pushing forward.",
-    "Work hard in silence.",
-    "Dream big, do bigger.",
-    "Consistency is key.",
-    "Focus on the goal.",
-    "No one is illegal",
-    "Be yourself; everyone else is already taken",
-    "Per aspera ad astra",
-    "Don't wish it were easier. Wish you were better.",
-    "Never give up, trust your instincts.",
-    "Level up!",
-    "If you're encountering enemies, you're going the right way.",
-    "Sometimes, you need to step back to move forward.",
-    "Do not be sorry. Be better.",
-    "It’s more important to master the cards you’re holding than to complain about the ones your opponent was dealt.",
-    "Praise the Sun!",
-    "The cake is a lie.",
-    "Nothing is true, everything is permitted.",
-    "War... war never changes.",
-    "A man chooses, a slave obeys.",
-    "Wake up, Samurai. We have a city to burn.",
-    "Protocol 3: Protect the Pilot.",
-    "Hesitation is defeat.",
-    "Hræðsla kømr at óvær, en coratge støðr af várr",
-    "No gods, no masters",
+    "Believe in yourself!", "Stay focused, stay humble.", "Make it happen.", "Small steps every day.",
+    "Your only limit is your mind.", "Keep pushing forward.", "Work hard in silence.", "Dream big, do bigger.",
+    "Consistency is key.", "Focus on the goal.", "No one is illegal", "Be yourself; everyone else is already taken",
+    "Per aspera ad astra", "Don't wish it were easier. Wish you were better.", "Never give up, trust your instincts.",
+    "Level up!", "If you're encountering enemies, you're going the right way.", "Sometimes, you need to step back to move forward.",
+    "Do not be sorry. Be better.", "It’s more important to master the cards you’re holding than to complain about the ones your opponent was dealt.",
+    "Praise the Sun!", "The cake is a lie.", "Nothing is true, everything is permitted.", "War... war never changes.",
+    "A man chooses, a slave obeys.", "Wake up, Samurai. We have a city to burn.", "Protocol 3: Protect the Pilot.",
+    "Hesitation is defeat.", "Hræðsla kømr at óvær, en coratge støðr af várr", "No gods, no masters"
 ];
 
 const themes = {
@@ -82,7 +42,10 @@ const themes = {
 };
 
 let userData = JSON.parse(localStorage.getItem("naxstart_data")) || defaultData;
+let agendaData = JSON.parse(localStorage.getItem('nax-agenda-data')) || [];
+let remindersVisible = true;
 
+// --- THEME SYSTEM ---
 function apply_theme(theme) {
     const root = document.documentElement;
     root.style.setProperty("--background", theme.background);
@@ -92,34 +55,92 @@ function apply_theme(theme) {
     root.style.setProperty("--contrast2", theme.contrast2);
 }
 
-function initThemeSystem() {
-    const themeSelector = document.getElementById("themeSelector");
-    if (themeSelector) {
-        themeSelector.innerHTML = ""; 
-        for (const key in themes) {
-            const opt = document.createElement("option");
-            opt.value = key;
-            opt.textContent = themes[key].name;
-            themeSelector.appendChild(opt);
-        }
-        themeSelector.onchange = (e) => {
-            const selected = themes[e.target.value];
-            apply_theme(selected);
-            localStorage.setItem("theme", e.target.value);
-        };
-        const saved = localStorage.getItem("theme") || "default";
-        themeSelector.value = saved;
-        apply_theme(themes[saved]);
+// --- HIDE REMINDERS (FORCE FIX) ---
+window.toggleRemindersVisibility = function() {
+    remindersVisible = !remindersVisible;
+    const mainArea = document.getElementById('main-reminders-area');
+    const btn = document.getElementById('hide-reminders-btn');
+    
+    if (mainArea) {
+        // Forzamos el cambio de estilo ignorando cualquier regla de CSS externa
+        mainArea.style.setProperty('display', remindersVisible ? 'flex' : 'none', 'important');
+        if(btn) btn.innerText = remindersVisible ? "Hide Reminders" : "Show Reminders";
     }
+};
+
+// --- AGENDA & TASKS ---
+window.toggleAgenda = function() {
+    document.getElementById('agenda-sidebar').classList.toggle('sidebar-hidden');
+};
+
+window.saveTask = function() {
+    const titleInput = document.getElementById('task-input-field');
+    const descInput = document.getElementById('task-desc');
+    const dateInput = document.getElementById('date-input-field');
+    const editId = document.getElementById('task-edit-id').value;
+
+    if (!titleInput || titleInput.value.trim() === "") return;
+
+    if (editId) {
+        agendaData = agendaData.map(t => t.id == editId ? {...t, title:titleInput.value, desc:descInput.value, date:dateInput.value} : t);
+        document.getElementById('task-edit-id').value = "";
+        document.getElementById('task-save-btn').innerText = "Add Entry";
+    } else {
+        agendaData.push({id: Date.now(), title: titleInput.value, desc: descInput.value, date: dateInput.value});
+    }
+    
+    localStorage.setItem('nax-agenda-data', JSON.stringify(agendaData));
+    renderAgenda();
+    
+    titleInput.value = ""; descInput.value = ""; dateInput.value = "";
+};
+
+window.removeTask = function(id) {
+    agendaData = agendaData.filter(t => t.id != id);
+    localStorage.setItem('nax-agenda-data', JSON.stringify(agendaData));
+    renderAgenda();
+};
+
+window.editTask = function(id) {
+    const task = agendaData.find(t => t.id == id);
+    if (!task) return;
+    document.getElementById('task-input-field').value = task.title;
+    document.getElementById('task-desc').value = task.desc;
+    document.getElementById('date-input-field').value = task.date;
+    document.getElementById('task-edit-id').value = id;
+    document.getElementById('task-save-btn').innerText = "Update Task";
+};
+
+function renderAgenda() {
+    const sidebarList = document.getElementById('tasks-list');
+    const mainArea = document.getElementById('main-reminders-area');
+    if (sidebarList) sidebarList.innerHTML = "";
+    if (mainArea) mainArea.innerHTML = "";
+
+    agendaData.forEach(task => {
+        const item = document.createElement('div');
+        item.className = 'task-item';
+        item.innerHTML = `
+            <div style="font-weight:bold;">${task.title}</div>
+            <div style="font-size:0.75em; opacity:0.7;">${task.desc}</div>
+            <div style="margin-top:5px;">
+                <button onclick="editTask(${task.id})" style="font-size:10px; color:var(--text); background:none; border:1px solid var(--contrast); cursor:pointer; padding:2px 5px;">EDIT</button>
+                <button onclick="removeTask(${task.id})" style="font-size:10px; color:var(--primary); background:none; border:1px solid var(--primary); cursor:pointer; padding:2px 5px;">DEL</button>
+            </div>`;
+        if (sidebarList) sidebarList.appendChild(item);
+
+        const reminder = document.createElement('div');
+        reminder.className = 'reminder-card';
+        reminder.innerHTML = `<span class="reminder-title">${task.title}</span><span class="reminder-desc-text">${task.desc}</span>`;
+        if (mainArea) mainArea.appendChild(reminder);
+    });
 }
 
-
-
+// --- LINKS & SETTINGS ---
 function renderLinks() {
     const mainContainer = document.querySelector(".links-block");
     if (!mainContainer) return;
     mainContainer.innerHTML = "";
-
     for (const key in userData) {
         const section = userData[key];
         const sectionElement = document.createElement("section");
@@ -138,241 +159,9 @@ function renderLinks() {
     setupHoverEffect();
 }
 
-function initQuoteSystem() {
-    const quoteContainer = document.getElementById("quote-box");
-    if (quoteContainer) {
-        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-        quoteContainer.textContent = randomQuote;
-    }
-}
-
-function toggleSettings() {
-    const panel = document.getElementById("settings-panel");
-    if (panel) panel.classList.toggle("active");
-}
-
-function generateSettingsUI() {
-    const container = document.getElementById("settings-controls");
-    if (!container) return;
-    container.innerHTML = "";
-
-    const addSectionBtn = document.createElement("button");
-    addSectionBtn.textContent = "+ ADD NEW SECTION";
-    addSectionBtn.style.cssText = "width:100%; background:var(--text); color:var(--background); border:none; padding:8px; border-radius:4px; font-weight:bold; cursor:pointer; margin-bottom:20px; font-size:11px;";
-    addSectionBtn.onclick = addSection;
-    container.appendChild(addSectionBtn);
-
-    for (const key in userData) {
-        const group = document.createElement("div");
-        group.style.cssText = "margin-bottom:25px; border-left: 2px solid var(--primary); padding-left:10px;";
-        
-        const header = document.createElement("div");
-        header.style.cssText = "display:flex; gap:5px; margin-bottom:10px;";
-        header.innerHTML = `
-            <input type="text" value="${userData[key].title}" oninput="updateTitle('${key}', this.value)" style="background:transparent; color:var(--primary); border:none; border-bottom:1px solid var(--primary); flex-grow:1; font-weight:bold;">
-            <button onclick="deleteSection('${key}')" style="background:transparent; color:#ff5555; border:1px solid #ff5555; cursor:pointer; font-size:10px; border-radius:3px; padding:0 5px;">DEL</button>
-        `;
-        group.appendChild(header);
-
-        userData[key].links.forEach((link, i) => {
-            const row = document.createElement("div");
-            row.style.cssText = "background:var(--contrast2); padding:8px; border-radius:5px; margin-bottom:8px; border:1px solid var(--contrast); position:relative;";
-            row.innerHTML = `
-                <button onclick="removeLink('${key}', ${i})" style="position:absolute; right:-5px; top:-5px; background:#ff5555; color:white; border:none; border-radius:50%; width:15px; height:15px; font-size:10px; cursor:pointer; line-height:1;">×</button>
-                <input type="text" placeholder="Name" value="${link.name || ''}" oninput="updateLink('${key}', ${i}, 'name', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary); margin-bottom:2px;">
-                <input type="text" placeholder="URL" value="${link.url}" oninput="updateLink('${key}', ${i}, 'url', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary); margin-bottom:2px;">
-                <input type="text" placeholder="Icon path" value="${link.img}" oninput="updateLink('${key}', ${i}, 'img', this.value)" style="width:100%; font-size:10px; background:var(--background); color:var(--text); border:1px solid var(--primary);">
-            `;
-            group.appendChild(row);
-        });
-
-        const addLinkBtn = document.createElement("button");
-        addLinkBtn.textContent = `+ Add Link (${userData[key].links.length}/8)`;
-        addLinkBtn.style.cssText = "width:100%; background:transparent; color:var(--text); border:1px dashed var(--primary); padding:5px; font-size:10px; cursor:pointer; margin-top:5px;";
-        addLinkBtn.onclick = () => addLink(key);
-        
-        if (userData[key].links.length >= 8) {
-            addLinkBtn.style.opacity = "0.5";
-            addLinkBtn.style.cursor = "not-allowed";
-            addLinkBtn.textContent = "Limit Reached (8/8)";
-        }
-        
-        group.appendChild(addLinkBtn);
-        container.appendChild(group);
-    }
-
-    const actions = document.createElement("div");
-    actions.innerHTML = `
-        <button onclick="exportJSON()" style="width:100%; background:var(--primary); color:var(--background); border:none; padding:8px; border-radius:4px; font-weight:bold; cursor:pointer; margin-top:10px;">SAVE TO FILE (.JSON)</button>
-        <label style="display:block; width:100%; text-align:center; margin-top:5px; cursor:pointer; border:1px solid var(--primary); font-size:10px; padding:3px; color:var(--text);">
-            LOAD FROM FILE <input type="file" accept=".json" onchange="importJSON(event)" style="display:none;">
-        </label>
-    `;
-    container.appendChild(actions);
-}
-
-function addLink(key) {
-    if (userData[key].links.length >= 8) {
-        alert("Maximum 8 links per section to keep the UI clean!");
-        return;
-    }
-    userData[key].links.push({ name: "New Link", url: "", img: "" });
-    save();
-    generateSettingsUI();
-}
-
-function removeLink(key, index) {
-    userData[key].links.splice(index, 1);
-    save();
-    generateSettingsUI();
-}
-
-function addSection() {
-    const id = "section_" + Date.now();
-    userData[id] = {
-        title: "New Section",
-        links: [{ name: "", url: "", img: "" }]
-    };
-    save();
-    generateSettingsUI();
-}
-
-function deleteSection(key) {
-    if (confirm(`Delete section "${userData[key].title}"?`)) {
-        delete userData[key];
-        save();
-        generateSettingsUI();
-    }
-    
-}
-let agendaData = JSON.parse(localStorage.getItem('nax-agenda-data')) || [];
-
-function toggleAgenda() {
-    document.getElementById('agenda-sidebar').classList.toggle('sidebar-hidden');
-}
-
-function saveTask() {
-    const titleInput = document.getElementById('task-input');
-    const descInput = document.getElementById('task-desc');
-    const dateInput = document.getElementById('date-input');
-    const editId = document.getElementById('task-edit-id').value;
-
-    if (titleInput.value.trim() === "") return;
-
-    if (editId) {
-        // Edit existing task
-        agendaData = agendaData.map(task => 
-            task.id == editId ? { 
-                ...task, 
-                title: titleInput.value, 
-                desc: descInput.value, 
-                date: dateInput.value 
-            } : task
-        );
-        document.getElementById('task-edit-id').value = "";
-        document.getElementById('task-save-btn').innerText = "Add Entry";
-    } else {
-        // Create new task
-        const newTask = {
-            id: Date.now(),
-            title: titleInput.value,
-            desc: descInput.value,
-            date: dateInput.value
-        };
-        agendaData.push(newTask);
-    }
-
-    syncAgenda();
-    titleInput.value = "";
-    descInput.value = "";
-    dateInput.value = "";
-}
-
-function editTask(id) {
-    const task = agendaData.find(t => t.id == id);
-    if (!task) return;
-
-    document.getElementById('task-input').value = task.title;
-    document.getElementById('task-desc').value = task.desc;
-    document.getElementById('date-input').value = task.date;
-    document.getElementById('task-edit-id').value = id;
-    document.getElementById('task-save-btn').innerText = "Update Task";
-}
-
-function removeTask(id) {
-    agendaData = agendaData.filter(t => t.id != id);
-    syncAgenda();
-}
-
-function syncAgenda() {
-    localStorage.setItem('nax-agenda-data', JSON.stringify(agendaData));
-    renderAgenda();
-}
-
-function renderAgenda() {
-    const sidebarList = document.getElementById('tasks-list');
-    const mainArea = document.getElementById('main-reminders-area');
-    
-    sidebarList.innerHTML = "";
-    mainArea.innerHTML = "";
-
-    agendaData.forEach(task => {
-        // 1. Render in Sidebar
-        const item = document.createElement('div');
-        item.className = 'task-item';
-        item.innerHTML = `
-            <div style="font-weight:bold; font-size:0.9em;">${task.title}</div>
-            <div style="font-size:0.75em; opacity:0.7; margin:5px 0;">${task.desc}</div>
-            <span class="task-date">${task.date ? task.date.replace('T', ' | ') : 'No date'}</span>
-            <div style="margin-top:10px; display:flex; gap:10px;">
-                <button onclick="editTask(${task.id})" style="background:none; color:var(--text); cursor:pointer; font-size:0.6em; border:1px solid var(--contrast); padding:2px 5px;">EDIT</button>
-                <button onclick="removeTask(${task.id})" style="background:none; color:var(--primary); cursor:pointer; font-size:0.6em; border:1px solid var(--primary); padding:2px 5px;">REMOVE</button>
-            </div>
-        `;
-        sidebarList.appendChild(item);
-
-        // 2. Render as Floating Reminder (PC ONLY - Overlay Style)
-        const reminder = document.createElement('div');
-        reminder.className = 'reminder-card'; // Utiliza la clase CSS de posicionamiento fijo
-        reminder.innerHTML = `
-            <div class="reminder-title">${task.title}</div>
-            <div class="reminder-desc">${task.desc}</div>
-        `;
-        mainArea.appendChild(reminder);
-    });
-}
-
-// Initial Run
-document.addEventListener('DOMContentLoaded', renderAgenda);
-// Initial Run
-document.addEventListener('DOMContentLoaded', renderAgenda);
-function updateTitle(key, val) { userData[key].title = val; save(); }
-function updateLink(key, i, f, v) { userData[key].links[i][f] = v; save(); }
-function save() { localStorage.setItem("naxstart_data", JSON.stringify(userData)); renderLinks(); }
-
-function exportJSON() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userData, null, 4));
-    const dl = document.createElement('a');
-    dl.setAttribute("href", dataStr);
-    dl.setAttribute("download", "config.json");
-    dl.click();
-}
-
-function importJSON(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => { 
-        try {
-            userData = JSON.parse(ev.target.result); 
-            save(); 
-            generateSettingsUI(); 
-        } catch(err) {
-            alert("Error: Invalid JSON");
-        }
-    };
-    reader.readAsText(file);
-}
+window.toggleSettings = function() {
+    document.getElementById("settings-panel").classList.toggle("active");
+};
 
 function setupHoverEffect() {
     const links = document.querySelectorAll(".page-link");
@@ -383,16 +172,34 @@ function setupHoverEffect() {
     });
 }
 
-document.addEventListener('keydown', (e) => {
-    if (e.key.toLowerCase() === 's' && e.target.tagName !== 'INPUT') {
-        const panel = document.getElementById("settings-panel");
-        if (panel) panel.classList.toggle("active");
+// --- INITIALIZATION ---
+document.addEventListener("DOMContentLoaded", () => {
+    const themeSelector = document.getElementById("themeSelector");
+    if (themeSelector) {
+        themeSelector.innerHTML = ""; // Limpiar antes de rellenar
+        for (const key in themes) {
+            const opt = document.createElement("option");
+            opt.value = key; opt.textContent = themes[key].name;
+            themeSelector.appendChild(opt);
+        }
+        themeSelector.onchange = (e) => {
+            const selected = themes[e.target.value];
+            apply_theme(selected);
+            localStorage.setItem("theme", e.target.value);
+        };
+        const saved = localStorage.getItem("theme") || "default";
+        themeSelector.value = saved;
+        apply_theme(themes[saved]);
     }
+
+    const qBox = document.getElementById("quote-box");
+    if (qBox) qBox.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+    
+    renderLinks();
+    renderAgenda();
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-    initThemeSystem(); 
-    initQuoteSystem();
-    renderLinks();
-    generateSettingsUI();
+document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key.toLowerCase() === 's') toggleSettings();
 });
