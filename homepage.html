@@ -14,11 +14,38 @@
 </head>
 
 <body>
+
+<div id="main-reminders-area" class="reminders-overlay"></div>
+
   <select id="themeSelector" class="selector"></select>
 
   <button id="mobile-settings-btn" onclick="toggleSettings()" class="mobile-only">⚙️</button>
 
+
   <div class="content--wrapper">
+
+    <div id="agenda-sidebar" class="sidebar sidebar-hidden">
+    <div class="sidebar-header">
+        <span class="sidebar-title">Agenda & Tasks</span>
+        <button onclick="toggleAgenda()" class="sidebar-close-btn">Close</button>
+    </div>
+    
+    <div class="agenda-wrapper">
+        <div class="agenda-input-group">
+            <input type="hidden" id="task-edit-id">
+            <input type="text" id="task-input" placeholder="Task Title">
+            <textarea id="task-desc" placeholder="Additional details..." style="background:var(--background); color:var(--text); border:1px solid var(--contrast); padding:10px; font-family:inherit; resize:none; height:60px;"></textarea>
+            <input type="datetime-local" id="date-input">
+            <button onclick="saveTask()" id="task-save-btn" class="add-task-btn">Add Entry</button>
+        </div>
+        <div id="tasks-list">
+            </div>
+    </div>
+</div>
+
+<button id="agenda-trigger" onclick="toggleAgenda()" class="pc-trigger">Agenda</button>
+
+
     <header class="welcome-message">
       <h1 id="welcomeMessageText">Welcome to NaxStart</h1>
       <div id="quote-box" class="quote-box"></div>

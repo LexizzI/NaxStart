@@ -243,8 +243,109 @@ function deleteSection(key) {
         save();
         generateSettingsUI();
     }
+    
+}
+let agendaData = JSON.parse(localStorage.getItem('nax-agenda-data')) || [];
+
+function toggleAgenda() {
+    document.getElementById('agenda-sidebar').classList.toggle('sidebar-hidden');
 }
 
+function saveTask() {
+    const titleInput = document.getElementById('task-input');
+    const descInput = document.getElementById('task-desc');
+    const dateInput = document.getElementById('date-input');
+    const editId = document.getElementById('task-edit-id').value;
+
+    if (titleInput.value.trim() === "") return;
+
+    if (editId) {
+        // Edit existing task
+        agendaData = agendaData.map(task => 
+            task.id == editId ? { 
+                ...task, 
+                title: titleInput.value, 
+                desc: descInput.value, 
+                date: dateInput.value 
+            } : task
+        );
+        document.getElementById('task-edit-id').value = "";
+        document.getElementById('task-save-btn').innerText = "Add Entry";
+    } else {
+        // Create new task
+        const newTask = {
+            id: Date.now(),
+            title: titleInput.value,
+            desc: descInput.value,
+            date: dateInput.value
+        };
+        agendaData.push(newTask);
+    }
+
+    syncAgenda();
+    titleInput.value = "";
+    descInput.value = "";
+    dateInput.value = "";
+}
+
+function editTask(id) {
+    const task = agendaData.find(t => t.id == id);
+    if (!task) return;
+
+    document.getElementById('task-input').value = task.title;
+    document.getElementById('task-desc').value = task.desc;
+    document.getElementById('date-input').value = task.date;
+    document.getElementById('task-edit-id').value = id;
+    document.getElementById('task-save-btn').innerText = "Update Task";
+}
+
+function removeTask(id) {
+    agendaData = agendaData.filter(t => t.id != id);
+    syncAgenda();
+}
+
+function syncAgenda() {
+    localStorage.setItem('nax-agenda-data', JSON.stringify(agendaData));
+    renderAgenda();
+}
+
+function renderAgenda() {
+    const sidebarList = document.getElementById('tasks-list');
+    const mainArea = document.getElementById('main-reminders-area');
+    
+    sidebarList.innerHTML = "";
+    mainArea.innerHTML = "";
+
+    agendaData.forEach(task => {
+        // 1. Render in Sidebar
+        const item = document.createElement('div');
+        item.className = 'task-item';
+        item.innerHTML = `
+            <div style="font-weight:bold; font-size:0.9em;">${task.title}</div>
+            <div style="font-size:0.75em; opacity:0.7; margin:5px 0;">${task.desc}</div>
+            <span class="task-date">${task.date ? task.date.replace('T', ' | ') : 'No date'}</span>
+            <div style="margin-top:10px; display:flex; gap:10px;">
+                <button onclick="editTask(${task.id})" style="background:none; color:var(--text); cursor:pointer; font-size:0.6em; border:1px solid var(--contrast); padding:2px 5px;">EDIT</button>
+                <button onclick="removeTask(${task.id})" style="background:none; color:var(--primary); cursor:pointer; font-size:0.6em; border:1px solid var(--primary); padding:2px 5px;">REMOVE</button>
+            </div>
+        `;
+        sidebarList.appendChild(item);
+
+        // 2. Render as Floating Reminder (PC ONLY - Overlay Style)
+        const reminder = document.createElement('div');
+        reminder.className = 'reminder-card'; // Utiliza la clase CSS de posicionamiento fijo
+        reminder.innerHTML = `
+            <div class="reminder-title">${task.title}</div>
+            <div class="reminder-desc">${task.desc}</div>
+        `;
+        mainArea.appendChild(reminder);
+    });
+}
+
+// Initial Run
+document.addEventListener('DOMContentLoaded', renderAgenda);
+// Initial Run
+document.addEventListener('DOMContentLoaded', renderAgenda);
 function updateTitle(key, val) { userData[key].title = val; save(); }
 function updateLink(key, i, f, v) { userData[key].links[i][f] = v; save(); }
 function save() { localStorage.setItem("naxstart_data", JSON.stringify(userData)); renderLinks(); }
