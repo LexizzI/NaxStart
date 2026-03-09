@@ -176,7 +176,15 @@ body, html {
 .footer_text {
     font-family: "Ubuntu", sans-serif;
     font-size: 13px;
+    transition: color 0.5s, font-size 0.2s;
 }
+
+
+.footer_text:hover {
+    color: var(--primary);
+    font-size: 14px;
+}
+
 
 .footer_img {
     width: 18px;
@@ -381,6 +389,11 @@ body, html {
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     font-family: 'Ubuntu', sans-serif;
     animation: slideIn 0.4s ease forwards;
+    transition: padding 0.3s;
+}
+
+.reminder-card:hover {
+    padding: 20px;
 }
 
 .reminder-title {
