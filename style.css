@@ -177,6 +177,7 @@ body, html {
     font-family: "Ubuntu", sans-serif;
     font-size: 13px;
     transition: color 0.5s, font-size 0.2s;
+    padding: 5px;
 }
 
 

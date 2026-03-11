@@ -15,7 +15,9 @@ const quotes = [
     "Do not be sorry. Be better.", "It’s more important to master the cards you’re holding than to complain about the ones your opponent was dealt.",
     "Praise the Sun!", "The cake is a lie.", "Nothing is true, everything is permitted.", "War... war never changes.",
     "A man chooses, a slave obeys.", "Wake up, Samurai. We have a city to burn.", "Protocol 3: Protect the Pilot.",
-    "Hesitation is defeat.", "Hræðsla kømr at óvær, en coratge støðr af várr", "No gods, no masters"
+    "Hesitation is defeat.", "Hræðsla kømr at óvær, en coratge støðr af várr", "No gods, no masters",
+    "Your focus determines your reality.",
+    "It is not the destination that matters. It is the journey.",
 ];
 
 const themes = {
@@ -39,12 +41,15 @@ const themes = {
     minecraft: { name: "Minecraft Grass", background: "#4d9043", text: "#ffffff", primary: "#795548", contrast: "#3d7335", contrast2: "#2e5728" },
     portal: { name: "Aperture Science", background: "#ffffff", text: "#444444", primary: "#00a4ff", contrast: "#e5e5e5", contrast2: "#cccccc" },
     halo: { name: "Master Chief", background: "#343d28", text: "#d4af37", primary: "#515e41", contrast: "#2a3120", contrast2: "#1e2317" },
-    bubblegum: { name: "Bubblegum Y2K", background: "#ffafcc", text: "#2b2d42", primary: "#ff006e", contrast: "#ffc8dd", contrast2: "#fb6f92" },
     synthwave: { name: "Synthwave Sunset", background: "#2b0b3d", text: "#e0def4", primary: "#f92aad", contrast: "#3d155f", contrast2: "#1a0628" },
     matrix: { name: "Matrix Code", background: "#000000", text: "#00ff41", primary: "#008f11", contrast: "#0d0d0d", contrast2: "#003b00" },
-    coffee: { name: "Espresso Roast", background: "#1b1411", text: "#d7baad", primary: "#a67c52", contrast: "#2a1f1b", contrast2: "#120d0b" }
+    coffee: { name: "Espresso Roast", background: "#1b1411", text: "#d7baad", primary: "#a67c52", contrast: "#2a1f1b", contrast2: "#120d0b" },
+    bubblegum: { name: "Bubblegum Y2K", background: "#ffafcc", text: "#2b2d42", primary: "#ff006e", contrast: "#ffc8dd", contrast2: "#fb6f92" },
+    blackPink: { name: "BlackPink", background: "#000000", text: "#ffffff", primary: "#ff5da2", contrast: "#1a1a1a", contrast2: "#111111" },
+    neonRose: { name: "Neon Rose", background: "#0a090c", text: "#fde2e4", primary: "#ff007f", contrast: "#1b191d", contrast2: "#141216" },
+    sakuraDark: { name: "Sakura Night", background: "#1d1a21", text: "#ffd6e0", primary: "#ff99c8", contrast: "#2a2431", contrast2: "#16131a" },
+    cyberDoll: { name: "Cyber Doll", background: "#23001e", text: "#ff00d4", primary: "#ff00d4", contrast: "#380030", contrast2: "#1a0016" }
 };
-
 let userData = JSON.parse(localStorage.getItem("naxstart_data")) || defaultData;
 let agendaData = JSON.parse(localStorage.getItem('nax-agenda-data')) || [];
 let remindersVisible = true;
