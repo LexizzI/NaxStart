@@ -11,8 +11,6 @@ NaxStart is a minimalist startpage focused on privacy and customization through 
 * **Real-time Customization**: Integrated settings interface to modify titles, URLs, and icons instantly.
 * **Portability**: Built-in functions to export and import the entire configuration as a JSON file.
 * **Dynamic Quotes**: Random quote system featuring video game and technical philosophy themes.
-* **Performance**: Developed in Vanilla JavaScript for instant load times with zero dependencies.
-
 ## Included Themes
 
 The system features color palettes based on popular development environments and operating systems:
