@@ -1,5 +1,3 @@
-> [!IMPORTANT]
-> **Known Issue:** The "Hide Reminders" toggle button is currently non-functional. This has been acknowledged and is listed as a high-priority fix for the next update.
 
 # NaxStart
 
