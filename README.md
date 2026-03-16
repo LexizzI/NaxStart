@@ -54,5 +54,13 @@ The system features color palettes based on popular development environments and
 4. Access the **Agenda** trigger to manage your daily tasks and reminders.
 5. Recommended for use with "Custom New Tab" extensions to set NaxStart as the default homepage.
 
+### Or:
+
+You can use this link: https://lexizzi.github.io/NaxStart/homepage.html
+
+1. Copy that link
+2. Go to settings in you browser
+3. Add it as a home page
+
 ---
 Made with ❤️ by **Lexizz & Contributors**

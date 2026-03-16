@@ -9,19 +9,19 @@ const defaultData = {
 const quotes = [
     "Believe in yourself!", "Stay focused, stay humble.", "Make it happen.", "Small steps every day.",
     "Your only limit is your mind.", "Keep pushing forward.", "Work hard in silence.", "Dream big, do bigger.",
-    "Consistency is key.", "Focus on the goal.", "No one is illegal", "Be yourself; everyone else is already taken",
+    "Consistency is key.", "Focus on the goal.", "No one is illegal", "Be yourself everyone else is already taken",
     "Per aspera ad astra", "Don't wish it were easier. Wish you were better.", "Never give up, trust your instincts.",
     "Level up!", "If you're encountering enemies, you're going the right way.", "Sometimes, you need to step back to move forward.",
     "Do not be sorry. Be better.", "It’s more important to master the cards you’re holding than to complain about the ones your opponent was dealt.",
     "Praise the Sun!", "The cake is a lie.", "Nothing is true, everything is permitted.", "War... war never changes.",
     "A man chooses, a slave obeys.", "Wake up, Samurai. We have a city to burn.", "Protocol 3: Protect the Pilot.",
     "Hesitation is defeat.", "Hræðsla kømr at óvær, en coratge støðr af várr", "No gods, no masters",
-    "Your focus determines your reality.",
-    "It is not the destination that matters. It is the journey.",
+    "Your focus determines your reality.","It is not the destination that matters. It is the journey.",
 ];
 
 const themes = {
     default: { name: "NaxStart", background: "#282a36", text: "#f5e2f8", primary: "#ff79c6", contrast: "#282a36", contrast2: "#21222c" },
+    kerubi: { name: "Kerubi", background: "#0a0412", text: "#e6dcff", primary: "#9d4edd", contrast: "#1f1035", contrast2: "#140824" },
     ubuntu: { name: "Ubuntu", background: "#300a24", text: "#ffffff", primary: "#e95420", contrast: "#5e2750", contrast2: "#2c0720" },
     gruvbox: { name: "Gruvbox", background: "#282828", text: "#ebdbb2", primary: "#fabd2f", contrast: "#3c3836", contrast2: "#1d2021" },
     arch: { name: "Arch Linux", background: "#1793d1", text: "#ffffff", primary: "#333333", contrast: "#0f5f88", contrast2: "#0c4b6c" },
@@ -166,7 +166,6 @@ window.saveTask = function() {
 
     localStorage.setItem('nax-agenda-data', JSON.stringify(agendaData));
     
-    // Reset fields
     idField.value = "";
     titleField.value = "";
     descField.value = "";
@@ -228,7 +227,6 @@ function renderAgenda() {
     }
 }
 
-// --- UI RENDERERS ---
 function renderSettings() {
     const container = document.getElementById("settings-controls");
     if (!container) return;
@@ -293,7 +291,6 @@ function renderLinks() {
     setupHoverEffect();
 }
 
-// --- UTILS ---
 window.toggleRemindersVisibility = () => {
     remindersVisible = !remindersVisible;
     const mainArea = document.getElementById('main-reminders-area');
@@ -339,3 +336,4 @@ document.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     if (e.key.toLowerCase() === 's') toggleSettings();
 });
+
