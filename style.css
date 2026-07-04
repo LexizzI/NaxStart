@@ -27,6 +27,7 @@ body, html {
     height: 100svh;
     display: flex;
     flex-direction: column;
+    overflow: hidden; /* Evita scrolls raros en la página entera */
 }
 
 .content--wrapper {
@@ -36,7 +37,6 @@ body, html {
     height: 100svh;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
 }
 
 .selector{
@@ -71,12 +71,6 @@ body, html {
     width: 100%;
 }
 
-.link-section {
-    background-color: var(--contrast2);
-    transition: background-color 1s;
-    box-shadow: 0px 0px 30px #000000;
-}
-
 .link-section-name img {
     color: var(--text);
 }
@@ -107,35 +101,40 @@ body, html {
     padding: 5px;
 }
 
+/* --- SECCIÓN CORREGIDA: EL DIV YA NO TOCA LOS EXTREMOS DEL MONITOR --- */
 .links-block {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: flex-start;
-    gap: 3em;
+    gap: 2.5em; /* Distancia entre tarjetas */
     flex-wrap: nowrap;
-    width: 90vw;
-    max-width: 1400px;
+    
+    /* Reducimos el ancho del bloque para dejar un 5% libre en cada lateral */
+    width: 90vw; 
+    margin: 0 auto; /* Centra el contenedor completo en el monitor */
+    padding: 2em 0; /* Quitamos el padding lateral para que mande el ancho del contenedor */
+    
+    box-sizing: border-box;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 2em 1.5em;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
+    
+    scroll-snap-type: x mandatory; 
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
 }
 
 .links-block::-webkit-scrollbar {
-    height: 8px;
-}
-.links-block::-webkit-scrollbar-track {
-    background: var(--contrast2);
-    border-radius: 10px;
-}
-.links-block::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 10px;
+    display: none; 
 }
 
+/* --- AJUSTE DE TARJETAS BASADO EN EL NUEVO ANCHO DEL DIV --- */
 .link-section {
+    background-color: var(--contrast2);
+    /* Calculado sobre el nuevo ancho útil de 90vw para mantener 4 elementos perfectos */
+    width: calc((90vw - (2.5em * 3)) / 4); 
+    min-width: 18em; 
     padding: 1.5em;
     border-radius: 12px;
     display: flex;
@@ -144,7 +143,11 @@ body, html {
     flex-direction: column;
     gap: 1.5em;
     flex-shrink: 0;
-    scroll-snap-align: center;
+    
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.4);
+    
+    scroll-snap-align: start; 
+    scroll-snap-stop: always; 
 }
 
 .link-section-name {
@@ -187,18 +190,13 @@ body, html {
     max-height: 15em;
     overflow-x: hidden;
     overflow-y: auto;
-    padding-right: 6px;
+    padding-right: 4px;
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
 }
 
 .link-section__grid::-webkit-scrollbar {
-    width: 4px;
-}
-.link-section__grid::-webkit-scrollbar-track {
-    background: transparent;
-}
-.link-section__grid::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 10px;
+    display: none; 
 }
 
 .link-card-name {
@@ -555,11 +553,17 @@ body, html {
         overflow-x: auto;
         overflow-y: hidden;
         padding: 1em;
+        scrollbar-width: none;
+    }
+    
+    .links-block::-webkit-scrollbar {
+        display: none;
     }
 
     .link-section {
         width: 85vw;
         flex-shrink: 0;
+        scroll-snap-align: center;
     }
 
     .link-section__grid {
@@ -572,6 +576,11 @@ body, html {
         max-height: 15em;
         overflow-x: hidden;
         overflow-y: auto;
+        scrollbar-width: none;
+    }
+    
+    .link-section__grid::-webkit-scrollbar {
+        display: none;
     }
 
     .page-link {
