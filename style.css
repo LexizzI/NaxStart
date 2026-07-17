@@ -299,27 +299,8 @@ select:focus-visible,
     grid-auto-rows: 7em;
     gap: 1em;
     width: 15em;
-    max-height: 15em;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding-right: 8px;
-    /* Barra visible (accesibilidad): avisa cuando hay más iconos abajo */
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary) var(--contrast2);
-}
-
-.link-section__grid::-webkit-scrollbar {
-    width: 6px;
-}
-
-.link-section__grid::-webkit-scrollbar-track {
-    background: var(--contrast2);
-    border-radius: 10px;
-}
-
-.link-section__grid::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 10px;
+    /* Sin altura fija ni scroll interno: la cuadrícula crece con el contenido */
+    padding-right: 4px;
 }
 
 .link-card-name {
@@ -686,8 +667,6 @@ select:focus-visible,
         grid-auto-rows: 7em;
         width: 100%;
         gap: 12px;
-        max-height: 15em;
-        overflow-y: auto;
     }
 
     .page-link {

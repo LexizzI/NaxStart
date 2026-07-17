@@ -10,63 +10,48 @@
 </head>
 
 <body>
-  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
-
   <div class="reminders-overlay">
       <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
-          <button onclick="toggleRemindersVisibility()" id="hide-reminders-btn" class="sidebar-close-btn" style="background:var(--contrast2); border:1px solid var(--primary); padding:2px 8px; cursor:pointer;" aria-pressed="true">
-            <span id="hide-reminders-btn-label">Ocultar recordatorios</span>
-          </button>
+          <button onclick="toggleRemindersVisibility()" id="hide-reminders-btn" class="sidebar-close-btn" style="background:var(--contrast2); border:1px solid var(--primary); padding:2px 8px; cursor:pointer;">Hide Reminders</button>
       </div>
-      <div id="main-reminders-area" class="reminders-scroll-container" role="region" aria-label="Recordatorios" aria-live="polite"></div>
+      <div id="main-reminders-area" class="reminders-scroll-container"></div>
   </div>
 
-  <div id="agenda-sidebar" class="sidebar sidebar-hidden" role="dialog" aria-modal="true" aria-labelledby="agenda-sidebar-title" aria-hidden="true">
+  <div id="agenda-sidebar" class="sidebar sidebar-hidden">
       <div class="sidebar-header">
-          <span class="sidebar-title" id="agenda-sidebar-title">Agenda y Tareas</span>
-          <button onclick="toggleAgenda()" class="sidebar-close-btn" aria-label="Cerrar agenda">Cerrar</button>
+          <span class="sidebar-title">Agenda & Tasks</span>
+          <button onclick="toggleAgenda()" class="sidebar-close-btn">Close</button>
       </div>
-
+      
       <div class="agenda-wrapper">
-          <form class="agenda-input-group" onsubmit="event.preventDefault(); saveTask();">
+          <div class="agenda-input-group">
               <input type="hidden" id="task-edit-id">
-
-              <label for="task-input-field" class="visually-hidden">Título de la tarea</label>
-              <input type="text" id="task-input-field" placeholder="Título de la tarea" required>
-
-              <label for="task-desc" class="visually-hidden">Detalles adicionales</label>
-              <textarea id="task-desc" class="agenda-desc" placeholder="Detalles adicionales..."></textarea>
-
-              <label for="date-input-field" class="visually-hidden">Fecha y hora</label>
+              <input type="text" id="task-input-field" placeholder="Task Title">
+              <textarea id="task-desc" class="agenda-desc" placeholder="Additional details..."></textarea>
               <input type="datetime-local" id="date-input-field">
-
-              <button type="submit" id="task-save-btn" class="add-task-btn">Añadir entrada</button>
-          </form>
-          <div id="tasks-list" class="tasks-scroll-area" role="list" aria-label="Lista de tareas"></div>
+              <button onclick="saveTask()" id="task-save-btn" class="add-task-btn">Add Entry</button>
+          </div>
+          <div id="tasks-list" class="tasks-scroll-area"></div>
       </div>
   </div>
 
-  <label for="themeSelector" class="visually-hidden">Elegir tema visual</label>
   <select id="themeSelector" class="selector"></select>
-  <button id="mobile-settings-btn" onclick="toggleSettings()" class="mobile-only" aria-label="Abrir ajustes" aria-haspopup="dialog">⚙️</button>
+  <button id="mobile-settings-btn" onclick="toggleSettings()" class="mobile-only">⚙️</button>
 
   <div class="content--wrapper">
-      <button id="agenda-trigger" onclick="toggleAgenda()" class="pc-trigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="agenda-sidebar">Agenda</button>
+      <button id="agenda-trigger" onclick="toggleAgenda()" class="pc-trigger">Agenda</button>
 
       <header class="welcome-message">
         <h1 id="welcomeMessageText">Welcome to NaxStart</h1>
-        <div id="quote-box" class="quote-box" role="note" aria-label="Frase del día"></div>
+        <div id="quote-box" class="quote-box"></div>
       </header>
 
-      <button type="button" class="carousel-nav-btn prev" id="carousel-prev" aria-label="Sección anterior" aria-controls="main-content">‹</button>
-      <button type="button" class="carousel-nav-btn next" id="carousel-next" aria-label="Sección siguiente" aria-controls="main-content">›</button>
-
-      <main class="links-block" id="main-content" aria-label="Enlaces rápidos: carrusel de secciones, desliza o usa las flechas" tabindex="0">
+      <main class="links-block">
         </main>
 
       <footer class="footer">
   <p class="footer_text">
-    Made with <img src="icons/heart.svg" class="footer_img" alt=""> by Lexizz & Contributors
+    Made with <img src="icons/heart.svg" class="footer_img"> by Lexizz & Contributors
   </p>
   <p class="footer_text">It works on my machine. ¯_(ツ)_/¯
 </p>
@@ -74,12 +59,10 @@
 
   </div>
 
-  <div class="settings-panel" id="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title" aria-hidden="true">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h3 class="settings-title" id="settings-title">AJUSTES</h3>
-        <button onclick="toggleSettings()" class="sidebar-close-btn" aria-label="Cerrar ajustes">Cerrar</button>
-      </div>
+  <div class="settings-panel" id="settings-panel">
+      <h3 class="settings-title">SETTINGS</h3>
       <div id="settings-controls"></div>
   </div>
 </body>
 </html>
+
