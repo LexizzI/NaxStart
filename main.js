@@ -56,6 +56,17 @@ let userData = JSON.parse(localStorage.getItem("naxstart_data")) || defaultData;
 let agendaData = JSON.parse(localStorage.getItem('nax-agenda-data')) || [];
 let remindersVisible = true;
 
+// Calcula si un color de fondo es claro u oscuro para decidir qué color de
+// texto usar encima (accesibilidad: evita texto blanco sobre fondos claros).
+function getReadableTextColor(hexColor) {
+    const hex = hexColor.replace("#", "");
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.6 ? "#111111" : "#ffffff";
+}
+
 function apply_theme(theme) {
     const root = document.documentElement;
     root.style.setProperty("--background", theme.background);
@@ -63,6 +74,7 @@ function apply_theme(theme) {
     root.style.setProperty("--primary", theme.primary);
     root.style.setProperty("--contrast", theme.contrast);
     root.style.setProperty("--contrast2", theme.contrast2);
+    root.style.setProperty("--card-text", getReadableTextColor(theme.contrast));
 }
 
 // --- LINKS LOGIC ---
@@ -92,6 +104,54 @@ window.removeLinkFromSection = function(sectionKey, index) {
     renderSettings();
     renderLinks();
 };
+
+// Permite usar una imagen del propio ordenador como icono de un enlace.
+// Se lee el archivo local y se guarda como Data URL en localStorage, sin
+// necesidad de subirla a ningún servidor.
+window.updateLinkImageFromFile = function(sectionKey, index, event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        announceToScreenReader("El archivo elegido no es una imagen.");
+        alert("Por favor selecciona un archivo de imagen (PNG, JPG, SVG, etc.).");
+        return;
+    }
+
+    const MAX_SIZE_BYTES = 1024 * 1024; // 1MB, para no saturar localStorage
+    if (file.size > MAX_SIZE_BYTES) {
+        alert("La imagen es demasiado grande. Usa una menor de 1MB.");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        userData[sectionKey].links[index].img = e.target.result;
+        localStorage.setItem("naxstart_data", JSON.stringify(userData));
+        renderSettings();
+        renderLinks();
+        announceToScreenReader(`Icono personalizado cargado para ${userData[sectionKey].links[index].name || "el enlace"}.`);
+    };
+    reader.onerror = () => {
+        alert("No se pudo leer la imagen. Inténtalo de nuevo.");
+    };
+    reader.readAsDataURL(file);
+};
+
+// Región viva discreta para avisos a lectores de pantalla que no encajan
+// en ningún otro contenedor con aria-live.
+function announceToScreenReader(message) {
+    let liveRegion = document.getElementById("sr-announcer");
+    if (!liveRegion) {
+        liveRegion = document.createElement("div");
+        liveRegion.id = "sr-announcer";
+        liveRegion.setAttribute("role", "status");
+        liveRegion.setAttribute("aria-live", "polite");
+        liveRegion.className = "visually-hidden";
+        document.body.appendChild(liveRegion);
+    }
+    liveRegion.textContent = message;
+}
 
 window.updateSectionTitle = function(key) {
     const newTitle = document.getElementById(`edit-section-title-${key}`).value;
@@ -200,16 +260,20 @@ function renderAgenda() {
     
     if (sidebarList) {
         sidebarList.innerHTML = "";
+        if (agendaData.length === 0) {
+            sidebarList.innerHTML = `<p style="opacity:0.6; font-size:0.85em;">No hay tareas todavía.</p>`;
+        }
         agendaData.forEach(task => {
             const item = document.createElement('div');
             item.className = 'task-item';
+            item.setAttribute('role', 'listitem');
             item.innerHTML = `
                 <div style="font-weight:bold; color:var(--primary);">${task.title}</div>
                 <div style="font-size:0.75em; opacity:0.7;">${task.desc}</div>
                 ${task.date ? `<div class="task-date">${task.date}</div>` : ''}
                 <div style="margin-top:8px; display:flex; gap:5px;">
-                    <button onclick="editTask(${task.id})" style="font-size:10px; color:var(--text); background:none; border:1px solid var(--contrast); cursor:pointer; padding:2px 5px;">EDIT</button>
-                    <button onclick="removeTask(${task.id})" style="font-size:10px; color:var(--primary); background:none; border:1px solid var(--primary); cursor:pointer; padding:2px 5px;">DEL</button>
+                    <button onclick="editTask(${task.id})" aria-label="Editar tarea: ${task.title}" style="font-size:10px; color:var(--text); background:none; border:1px solid var(--contrast); cursor:pointer; padding:2px 5px;">EDITAR</button>
+                    <button onclick="removeTask(${task.id})" aria-label="Eliminar tarea: ${task.title}" style="font-size:10px; color:var(--primary); background:none; border:1px solid var(--primary); cursor:pointer; padding:2px 5px;">BORRAR</button>
                 </div>`;
             sidebarList.appendChild(item);
         });
@@ -220,6 +284,7 @@ function renderAgenda() {
         agendaData.forEach(task => {
             const reminder = document.createElement('div');
             reminder.className = 'reminder-card';
+            reminder.setAttribute('role', 'listitem');
             reminder.innerHTML = `
                 <span class="reminder-title">${task.title}</span>
                 <span class="reminder-desc-text">${task.desc}</span>
@@ -235,9 +300,9 @@ function renderSettings() {
     container.innerHTML = `
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--primary);">
             <button onclick="addSection()" style="grid-column: span 2; background: var(--primary); color: var(--background); padding: 10px; cursor: pointer; font-weight: bold; border-radius: 4px; letter-spacing: 1px;">+ CREATE NEW SECTION</button>
-            <button onclick="exportConfig()" style="background: var(--contrast); color: var(--text); border: 1px solid var(--primary); padding: 8px; cursor: pointer; font-size: 0.8em; border-radius: 4px;">⬇ EXPORT JSON</button>
-            <button onclick="document.getElementById('file-import').click()" style="background: var(--contrast); color: var(--text); border: 1px solid var(--primary); padding: 8px; cursor: pointer; font-size: 0.8em; border-radius: 4px;">⬆ IMPORT JSON</button>
-            <input type="file" id="file-import" style="display:none" onchange="importConfig(event)">
+            <button onclick="exportConfig()" aria-label="Exportar configuración a JSON" style="background: var(--contrast); color: var(--text); border: 1px solid var(--primary); padding: 8px; cursor: pointer; font-size: 0.8em; border-radius: 4px;">⬇ EXPORTAR JSON</button>
+            <button onclick="document.getElementById('file-import').click()" aria-label="Importar configuración desde JSON" style="background: var(--contrast); color: var(--text); border: 1px solid var(--primary); padding: 8px; cursor: pointer; font-size: 0.8em; border-radius: 4px;">⬆ IMPORTAR JSON</button>
+            <input type="file" id="file-import" accept="application/json" class="visually-hidden" tabindex="-1" aria-hidden="true" onchange="importConfig(event)">
         </div>
     `;
     for (const key in userData) {
@@ -249,9 +314,10 @@ function renderSettings() {
         div.style.borderRadius = "8px";
         div.innerHTML = `
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+                <label for="edit-section-title-${key}" class="visually-hidden">Título de la sección ${section.title}</label>
                 <input type="text" id="edit-section-title-${key}" value="${section.title}" oninput="updateSectionTitle('${key}')" style="flex-grow: 1; background: none; border: 1px solid var(--primary); color: var(--primary); font-weight: bold; padding: 4px; border-radius: 3px;">
-                <button onclick="addLinkToSection('${key}')" style="background: var(--primary); color: var(--background); font-size: 0.7em; padding: 5px 8px; cursor: pointer; border-radius: 3px; font-weight: bold;">+ LINK</button>
-                <button onclick="removeSection('${key}')" style="background: none; color: #ff5555; cursor: pointer; font-size: 0.7em; border: 1px solid #ff5555; padding: 4px; border-radius: 3px;">DEL SEC</button>
+                <button onclick="addLinkToSection('${key}')" aria-label="Añadir enlace a ${section.title}" style="background: var(--primary); color: var(--background); font-size: 0.7em; padding: 5px 8px; cursor: pointer; border-radius: 3px; font-weight: bold;">+ LINK</button>
+                <button onclick="removeSection('${key}')" aria-label="Eliminar sección ${section.title}" style="background: none; color: #ff5555; cursor: pointer; font-size: 0.7em; border: 1px solid #ff5555; padding: 4px; border-radius: 3px;">DEL SEC</button>
             </div>
         `;
         section.links.forEach((link, idx) => {
@@ -259,11 +325,23 @@ function renderSettings() {
             row.style.display = "flex";
             row.style.gap = "6px";
             row.style.marginBottom = "6px";
+            const rowId = `${key}-${idx}`;
             row.innerHTML = `
-                <input type="text" id="edit-name-${key}-${idx}" value="${link.name}" placeholder="Title" oninput="updateLink('${key}', ${idx})" style="width: 25%; background: var(--background); color: var(--text); border: 1px solid var(--contrast); padding: 6px; border-radius: 3px; font-size: 0.85em;">
-                <input type="text" id="edit-url-${key}-${idx}" value="${link.url}" placeholder="URL" oninput="updateLink('${key}', ${idx})" style="width: 40%; background: var(--background); color: var(--text); border: 1px solid var(--contrast); padding: 6px; border-radius: 3px; font-size: 0.85em;">
-                <input type="text" id="edit-img-${key}-${idx}" value="${link.img}" placeholder="Icon path" oninput="updateLink('${key}', ${idx})" style="width: 25%; background: var(--background); color: var(--text); border: 1px solid var(--contrast); padding: 6px; border-radius: 3px; font-size: 0.85em;">
-                <button onclick="removeLinkFromSection('${key}', ${idx})" style="width: 10%; background: none; color: #ff5555; border: 1px solid #ff5555; cursor: pointer; border-radius: 3px; font-weight: bold;">×</button>
+                <label for="edit-name-${rowId}" class="visually-hidden">Título del enlace</label>
+                <input type="text" id="edit-name-${rowId}" value="${link.name}" placeholder="Título" oninput="updateLink('${key}', ${idx})" style="width: 22%; background: var(--background); color: var(--text); border: 1px solid var(--contrast); padding: 6px; border-radius: 3px; font-size: 0.85em;">
+
+                <label for="edit-url-${rowId}" class="visually-hidden">URL del enlace</label>
+                <input type="text" id="edit-url-${rowId}" value="${link.url}" placeholder="URL" oninput="updateLink('${key}', ${idx})" style="width: 33%; background: var(--background); color: var(--text); border: 1px solid var(--contrast); padding: 6px; border-radius: 3px; font-size: 0.85em;">
+
+                <label for="edit-img-${rowId}" class="visually-hidden">Ruta o URL del icono</label>
+                <input type="text" id="edit-img-${rowId}" value="${link.img}" placeholder="Ruta/URL del icono" oninput="updateLink('${key}', ${idx})" style="width: 20%; background: var(--background); color: var(--text); border: 1px solid var(--contrast); padding: 6px; border-radius: 3px; font-size: 0.85em;">
+
+                <label for="upload-img-${rowId}" title="Subir imagen desde el PC" style="width: 15%; display:flex; align-items:center; justify-content:center; background: var(--contrast); color: var(--text); border: 1px solid var(--primary); cursor: pointer; border-radius: 3px; font-size: 0.9em;" aria-label="Subir icono desde el ordenador para ${link.name || 'este enlace'}">
+                    📁
+                    <input type="file" id="upload-img-${rowId}" accept="image/*" class="visually-hidden" onchange="updateLinkImageFromFile('${key}', ${idx}, event)">
+                </label>
+
+                <button onclick="removeLinkFromSection('${key}', ${idx})" aria-label="Eliminar enlace ${link.name || ''}" style="width: 10%; background: none; color: #ff5555; border: 1px solid #ff5555; cursor: pointer; border-radius: 3px; font-weight: bold;">×</button>
             `;
             div.appendChild(row);
         });
@@ -279,13 +357,23 @@ function renderLinks() {
         const section = userData[key];
         const sectionElement = document.createElement("section");
         sectionElement.className = "link-section";
+        sectionElement.setAttribute("aria-labelledby", `section-title-${key}`);
         sectionElement.innerHTML = `
-            <p class="link-section-name">${section.title}</p>
-            <div class="link-section__grid">
-                ${section.links.map(link => link.url ? `
-                    <a href="${link.url}" target="_blank" class="page-link" title="${link.name}">
-                        <img src="${link.img}" alt="${link.name}" class="link-img">
-                    </a>` : '').join('')}
+            <p class="link-section-name" id="section-title-${key}" tabindex="0">${section.title}</p>
+            <div class="link-section__grid" role="list">
+                ${section.links.map(link => {
+                    if (!link.url) return '';
+                    const safeName = link.name || "Enlace sin título";
+                    const initials = safeName.trim().slice(0, 2).toUpperCase();
+                    const iconMarkup = link.img
+                        ? `<img src="${link.img}" alt="" class="link-img">`
+                        : `<div class="link-icon-placeholder" aria-hidden="true">${initials}</div>`;
+                    return `
+                    <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="page-link" title="${safeName}" aria-label="${safeName} (se abre en una pestaña nueva)" role="listitem">
+                        ${iconMarkup}
+                        <span class="link-card-name">${safeName}</span>
+                    </a>`;
+                }).join('')}
             </div>
         `;
         mainContainer.appendChild(sectionElement);
@@ -295,12 +383,105 @@ function renderLinks() {
 
 window.toggleRemindersVisibility = () => {
     remindersVisible = !remindersVisible;
-    const mainArea = document.getElementById('main-reminders-area');
-    if (mainArea) mainArea.style.display = remindersVisible ? 'flex' : 'none';
+    document.body.classList.toggle('hide-reminders-active', !remindersVisible);
+
+    const btn = document.getElementById('hide-reminders-btn');
+    const label = document.getElementById('hide-reminders-btn-label');
+    if (btn) btn.setAttribute('aria-pressed', String(remindersVisible));
+    if (label) label.textContent = remindersVisible ? 'Ocultar recordatorios' : 'Mostrar recordatorios';
 };
 
-window.toggleAgenda = () => document.getElementById('agenda-sidebar').classList.toggle('sidebar-hidden');
-window.toggleSettings = () => document.getElementById("settings-panel").classList.toggle("active");
+window.toggleAgenda = () => {
+    const sidebar = document.getElementById('agenda-sidebar');
+    const trigger = document.getElementById('agenda-trigger');
+    const isHidden = sidebar.classList.toggle('sidebar-hidden');
+    sidebar.setAttribute('aria-hidden', String(isHidden));
+    if (trigger) trigger.setAttribute('aria-expanded', String(!isHidden));
+
+    if (!isHidden) {
+        // Al abrir, mover el foco dentro del panel (accesibilidad por teclado)
+        const firstField = document.getElementById('task-input-field');
+        if (firstField) firstField.focus();
+    } else if (trigger) {
+        trigger.focus();
+    }
+};
+
+window.toggleSettings = () => {
+    const panel = document.getElementById("settings-panel");
+    const isActive = panel.classList.toggle("active");
+    panel.setAttribute('aria-hidden', String(!isActive));
+    if (isActive) {
+        const closeBtn = panel.querySelector('.sidebar-close-btn');
+        if (closeBtn) closeBtn.focus();
+    }
+};
+
+function setupCarousel() {
+    const track = document.querySelector(".links-block");
+    if (!track) return;
+
+    const prevBtn = document.getElementById("carousel-prev");
+    const nextBtn = document.getElementById("carousel-next");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function scrollByCard(direction) {
+        const card = track.querySelector(".link-section");
+        const amount = card ? card.getBoundingClientRect().width + 40 : 300;
+        track.scrollBy({ left: amount * direction, behavior: reducedMotion ? "auto" : "smooth" });
+    }
+
+    if (prevBtn) prevBtn.onclick = () => scrollByCard(-1);
+    if (nextBtn) nextBtn.onclick = () => scrollByCard(1);
+
+    // Navegación con teclado cuando el carrusel tiene el foco
+    track.onkeydown = (e) => {
+        if (e.key === "ArrowRight") { e.preventDefault(); scrollByCard(1); }
+        if (e.key === "ArrowLeft") { e.preventDefault(); scrollByCard(-1); }
+    };
+
+    // Arrastrar con el ratón para deslizar el carrusel (los táctiles y el
+    // trackpad ya funcionan de forma nativa gracias a overflow-x + scroll-snap)
+    let isDown = false;
+    let startX = 0;
+    let startScroll = 0;
+    let didDrag = false;
+
+    track.addEventListener("pointerdown", (e) => {
+        if (e.pointerType === "touch") return; // el táctil ya se gestiona nativamente
+        isDown = true;
+        didDrag = false;
+        track.classList.add("is-dragging");
+        startX = e.clientX;
+        startScroll = track.scrollLeft;
+        track.setPointerCapture(e.pointerId);
+    });
+
+    track.addEventListener("pointermove", (e) => {
+        if (!isDown) return;
+        const delta = e.clientX - startX;
+        if (Math.abs(delta) > 5) didDrag = true;
+        track.scrollLeft = startScroll - delta;
+    });
+
+    function endDrag(e) {
+        if (!isDown) return;
+        isDown = false;
+        track.classList.remove("is-dragging");
+    }
+    track.addEventListener("pointerup", endDrag);
+    track.addEventListener("pointerleave", endDrag);
+    track.addEventListener("pointercancel", endDrag);
+
+    // Si hubo arrastre, evita que el click suelte accidentalmente un enlace
+    track.addEventListener("click", (e) => {
+        if (didDrag) {
+            e.preventDefault();
+            e.stopPropagation();
+            didDrag = false;
+        }
+    }, true);
+}
 
 function setupHoverEffect() {
     const links = document.querySelectorAll(".page-link");
@@ -332,10 +513,17 @@ document.addEventListener("DOMContentLoaded", () => {
     renderLinks();
     renderAgenda();
     renderSettings();
+    setupCarousel();
 });
 
 document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const sidebar = document.getElementById('agenda-sidebar');
+        const settings = document.getElementById('settings-panel');
+        if (sidebar && !sidebar.classList.contains('sidebar-hidden')) toggleAgenda();
+        if (settings && settings.classList.contains('active')) toggleSettings();
+        return;
+    }
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     if (e.key.toLowerCase() === 's') toggleSettings();
 });
-

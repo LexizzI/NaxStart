@@ -23,20 +23,75 @@ body.hide-reminders-active #main-reminders-area {
 }
 
 body, html {
-    width: 100svw;
-    height: 100svh;
+    width: 100%;
+    min-height: 100svh;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Evita scrolls raros en la página entera */
+    /* Ya no forzamos overflow:hidden: dejamos que sea el navegador quien
+       gestione el scroll de la página de forma nativa y accesible, en vez
+       de crear varios scrolls internos con la barra oculta. */
 }
 
 .content--wrapper {
     display: flex;
     flex-direction: column;
-    width: 100svw;
-    height: 100svh;
+    width: 100%;
+    min-height: 100svh;
     justify-content: center;
     align-items: center;
+    padding: 2em 0;
+    box-sizing: border-box;
+}
+
+/* Enlace de salto para usuarios de teclado/lector de pantalla */
+.skip-link {
+    position: absolute;
+    left: -999px;
+    top: auto;
+    background: var(--primary);
+    color: var(--background);
+    padding: 10px 16px;
+    z-index: 5000;
+    border-radius: 4px;
+    font-family: "Ubuntu", sans-serif;
+    text-decoration: none;
+}
+
+.skip-link:focus {
+    left: 20px;
+    top: 20px;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Foco visible consistente para navegación por teclado (accesibilidad) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+.page-link:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
 }
 
 .selector{
@@ -84,7 +139,7 @@ body, html {
     padding: 1em;
     text-decoration: none !important;
     font-family: "Ubuntu", sans-serif;
-    color: #ffffff !important;
+    color: var(--card-text, #ffffff);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -101,40 +156,61 @@ body, html {
     padding: 5px;
 }
 
-/* --- SECCIÓN CORREGIDA: EL DIV YA NO TOCA LOS EXTREMOS DEL MONITOR --- */
+/* --- Carrusel: las secciones se deslizan horizontalmente con scroll/drag --- */
 .links-block {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 2.5em; /* Distancia entre tarjetas */
     flex-wrap: nowrap;
-    
-    /* Reducimos el ancho del bloque para dejar un 5% libre en cada lateral */
-    width: 90vw; 
+
+    width: 90vw;
+    max-width: 1400px;
     margin: 0 auto; /* Centra el contenedor completo en el monitor */
-    padding: 2em 0; /* Quitamos el padding lateral para que mande el ancho del contenedor */
-    
+    padding: 2em 0;
+
     box-sizing: border-box;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    
-    scroll-snap-type: x mandatory; 
-    scrollbar-width: none; 
-    -ms-overflow-style: none; 
+
+    scroll-snap-type: x mandatory;
+    cursor: grab;
+    /* La barra de scroll se mantiene visible (accesibilidad): indica que
+       hay más secciones y permite navegar sin depender del arrastre. */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) var(--contrast2);
+}
+
+.links-block:active {
+    cursor: grabbing;
+}
+
+.links-block.is-dragging {
+    scroll-snap-type: none;
+    cursor: grabbing;
 }
 
 .links-block::-webkit-scrollbar {
-    display: none; 
+    height: 8px;
 }
 
-/* --- AJUSTE DE TARJETAS BASADO EN EL NUEVO ANCHO DEL DIV --- */
+.links-block::-webkit-scrollbar-track {
+    background: var(--contrast2);
+}
+
+.links-block::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+/* --- Tarjetas de ancho fijo para que el carrusel las encaje una a una --- */
 .link-section {
     background-color: var(--contrast2);
-    /* Calculado sobre el nuevo ancho útil de 90vw para mantener 4 elementos perfectos */
-    width: calc((90vw - (2.5em * 3)) / 4); 
-    min-width: 18em; 
+    width: 18em;
+    min-width: 18em;
+    max-width: 22em;
     padding: 1.5em;
     border-radius: 12px;
     display: flex;
@@ -143,11 +219,43 @@ body, html {
     flex-direction: column;
     gap: 1.5em;
     flex-shrink: 0;
-    
+
     box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.4);
-    
-    scroll-snap-align: start; 
-    scroll-snap-stop: always; 
+
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+}
+
+/* Flechas de navegación del carrusel */
+.carousel-nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--contrast2);
+    color: var(--text);
+    border: 1px solid var(--primary);
+    width: 2.6em;
+    height: 2.6em;
+    border-radius: 50%;
+    font-size: 1.2em;
+    cursor: pointer;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+}
+
+.carousel-nav-btn:hover {
+    background: var(--primary);
+    color: var(--background);
+}
+
+.carousel-nav-btn.prev { left: 15px; }
+.carousel-nav-btn.next { right: 15px; }
+
+@media (max-width: 900px) {
+    .carousel-nav-btn { display: none; }
 }
 
 .link-section-name {
@@ -163,16 +271,21 @@ body, html {
 .link-section-name::before {
     content: "";
     position: absolute;
-    height: 0.3em;
+    height: 0.15em;
     width: 110%;
     left: 50%;
     transform: translate(-50%, 0);
-    bottom: 0;
-    transition: height 0.5s;
+    bottom: -0.15em;
+    background-color: var(--primary);
+    opacity: 0.6;
+    border-radius: 2px;
+    transition: height 0.5s, opacity 0.5s;
 }
 
-.link-section-name:hover::before {
-    height: 0.6em;
+.link-section-name:hover::before,
+.link-section-name:focus-within::before {
+    height: 0.3em;
+    opacity: 1;
 }
 
 .link-section-name img {
@@ -186,17 +299,27 @@ body, html {
     grid-auto-rows: 7em;
     gap: 1em;
     width: 15em;
-    height: 15em;
     max-height: 15em;
     overflow-x: hidden;
     overflow-y: auto;
-    padding-right: 4px;
-    scrollbar-width: none; 
-    -ms-overflow-style: none; 
+    padding-right: 8px;
+    /* Barra visible (accesibilidad): avisa cuando hay más iconos abajo */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) var(--contrast2);
 }
 
 .link-section__grid::-webkit-scrollbar {
-    display: none; 
+    width: 6px;
+}
+
+.link-section__grid::-webkit-scrollbar-track {
+    background: var(--contrast2);
+    border-radius: 10px;
+}
+
+.link-section__grid::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
 }
 
 .link-card-name {
@@ -262,7 +385,6 @@ body, html {
 .footer_img {
     width: 18px;
     height: 15px;
-    fill: var(--contrast);
 }
 
 .settings-panel {
@@ -307,6 +429,17 @@ body, html {
     flex-direction: column;
     padding: 25px;
     font-family: "Ubuntu", sans-serif;
+    /* Un único scroll, visible y accesible, en vez de varios anidados */
+    overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
 }
 
 .sidebar-hidden {
@@ -441,13 +574,13 @@ body, html {
     gap: 10px;
     pointer-events: none;
     max-height: 85vh;
+    overflow-y: auto;
 }
 
 .reminders-scroll-container {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    overflow-y: auto;
     padding-right: 8px;
     pointer-events: auto;
 }
@@ -489,11 +622,11 @@ body, html {
     display: none !important;
 }
 
-.reminders-scroll-container::-webkit-scrollbar {
+.reminders-overlay::-webkit-scrollbar {
     width: 4px;
 }
 
-.reminders-scroll-container::-webkit-scrollbar-thumb {
+.reminders-overlay::-webkit-scrollbar-thumb {
     background: var(--primary);
     border-radius: 10px;
 }
@@ -504,19 +637,7 @@ body, html {
 }
 
 .tasks-scroll-area {
-    max-height: calc(100vh - 380px); 
-    overflow-y: auto;
-    padding-right: 10px;
     margin-top: 15px;
-}
-
-.tasks-scroll-area::-webkit-scrollbar {
-    width: 4px;
-}
-
-.tasks-scroll-area::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 10px;
 }
 
 .mobile-only { display: none; }
@@ -549,19 +670,12 @@ body, html {
         justify-content: flex-start;
         gap: 20px;
         width: 100vw;
-        max-height: none; 
-        overflow-x: auto;
-        overflow-y: hidden;
         padding: 1em;
-        scrollbar-width: none;
-    }
-    
-    .links-block::-webkit-scrollbar {
-        display: none;
     }
 
     .link-section {
         width: 85vw;
+        min-width: 85vw;
         flex-shrink: 0;
         scroll-snap-align: center;
     }
@@ -572,15 +686,8 @@ body, html {
         grid-auto-rows: 7em;
         width: 100%;
         gap: 12px;
-        height: 15em;
         max-height: 15em;
-        overflow-x: hidden;
         overflow-y: auto;
-        scrollbar-width: none;
-    }
-    
-    .link-section__grid::-webkit-scrollbar {
-        display: none;
     }
 
     .page-link {
