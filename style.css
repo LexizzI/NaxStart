@@ -215,15 +215,16 @@ body::-webkit-scrollbar {
     grid-auto-rows: 7em;
     gap: 1em;
     width: 15em;
-    min-height: 15em; /* Altura mínima = 2 filas de links (7em + 1em gap + 7em) */
+    height: 15em; /* Altura fija para 2 filas de links (7em + 1em gap + 7em) */
     align-content: start; /* Los links se alinean desde arriba */
-    overflow: visible;
-    scrollbar-width: none; 
-    -ms-overflow-style: none; 
+    overflow-y: auto; /* Scroll vertical cuando hay más de 4 links */
+    overflow-x: hidden;
+    scrollbar-width: none; /* Oculta la barra de scroll */
+    -ms-overflow-style: none; /* IE/Edge */
 }
 
 .link-section__grid::-webkit-scrollbar {
-    display: none; 
+    display: none; /* Oculta la barra de scroll en Chrome/Safari */
 }
 
 .link-card-name {
@@ -430,12 +431,14 @@ body::-webkit-scrollbar {
 .settings-row {
     display: flex;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
+    width: 100%;
 }
 
 .settings-row .settings-input {
-    flex-grow: 1;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .settings-upload-label {
@@ -453,6 +456,7 @@ body::-webkit-scrollbar {
     overflow: hidden;
     text-overflow: ellipsis;
     flex-shrink: 0;
+    min-width: fit-content;
 }
 
 .settings-upload-label:hover {
@@ -470,6 +474,7 @@ body::-webkit-scrollbar {
     padding: 4px 8px;
     font-size: 0.85em;
     flex-shrink: 0;
+    min-width: fit-content;
 }
 
 .settings-remove-btn:hover {
@@ -756,15 +761,17 @@ body::-webkit-scrollbar {
         grid-template-columns: repeat(2, 1fr);
         grid-auto-rows: 7em;
         width: 100%;
-        min-height: 15em;
+        height: 15em;
         align-content: start; /* Los links se alinean desde arriba */
         gap: 12px;
-        overflow: visible;
-        scrollbar-width: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none; /* Oculta la barra de scroll */
+        -ms-overflow-style: none; /* IE/Edge */
     }
     
     .link-section__grid::-webkit-scrollbar {
-        display: none;
+        display: none; /* Oculta la barra de scroll en Chrome/Safari */
     }
 
     .page-link {
