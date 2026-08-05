@@ -23,8 +23,8 @@ body.hide-reminders-active #main-reminders-area {
 }
 
 body, html {
-    width: 100svw;
-    height: 100svh;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -40,8 +40,8 @@ body::-webkit-scrollbar {
 .content--wrapper {
     display: flex;
     flex-direction: column;
-    width: 100svw;
-    min-height: 100svh;
+    width: 100%;
+    min-height: 100%;
     justify-content: center;
     align-items: center;
     overflow: visible;
@@ -116,20 +116,23 @@ body::-webkit-scrollbar {
 .links-block {
     display: flex;
     align-items: flex-start;
-    justify-content: center; /* Centra las secciones en el viewport */
+    justify-content: flex-start; /* Las secciones empiezan desde la izquierda */
     gap: 2.5em; /* Distancia entre tarjetas */
     flex-wrap: nowrap;
     
-    /* Ancho fijo para mostrar 4 secciones, centrado en el monitor */
-    width: 90vw; 
-    margin: 0 auto; /* Centra el contenedor completo en el monitor */
+    /* Ancho adaptable para mostrar 4 secciones */
+    width: 100%; 
+    max-width: 1400px; /* Ancho máximo para pantallas grandes */
     padding: 2em; /* Padding en todos los lados para que las sombras no se recorten */
+    padding-left: max(2em, env(safe-area-inset-left)); /* Adapta a pantallas con notch */
+    padding-right: max(2em, env(safe-area-inset-right)); /* Adapta a pantallas con notch */
     
     box-sizing: border-box;
     overflow-x: auto;
     overflow-y: auto;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable; /* Reserva espacio para la scrollbar horizontal */
     
     scroll-snap-type: x proximity; 
     scroll-padding-left: 2em; /* Alinea el snap con el padding */
@@ -161,8 +164,10 @@ body::-webkit-scrollbar {
 /* --- AJUSTE DE TARJETAS BASADO EN EL NUEVO ANCHO DEL DIV --- */
 .link-section {
     background-color: var(--contrast2);
-    /* Cada sección es 1/4 del ancho útil (90vw - padding 4em - 3 gaps de 2.5em) */
-    width: calc((90vw - 4em - (2.5em * 3)) / 4); 
+    /* Ancho flexible que ocupa 1/4 del contenedor, con límites razonables */
+    width: clamp(15em, 25%, 320px); /* Mínimo 15em, ideal 25%, máximo 320px */
+    min-width: 15em; /* Ancho mínimo para evitar que se corten en pantallas pequeñas */
+    max-width: 320px; /* Ancho máximo para mantener proporción en pantallas grandes */
     padding: 1.5em;
     border-radius: 12px;
     display: flex;
