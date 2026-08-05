@@ -69,10 +69,32 @@ function apply_theme(theme) {
 window.updateLink = function(sectionKey, index) {
     const nameVal = document.getElementById(`edit-name-${sectionKey}-${index}`).value;
     const urlVal = document.getElementById(`edit-url-${sectionKey}-${index}`).value;
-    const imgVal = document.getElementById(`edit-img-${sectionKey}-${index}`).value;
-    userData[sectionKey].links[index] = { name: nameVal, url: urlVal, img: imgVal };
+    const imgInput = document.getElementById(`edit-img-${sectionKey}-${index}`);
+    const imgVal = imgInput.value;
+    // Si el input de imagen contiene el placeholder de imagen subida, mantener la imagen actual
+    const currentImg = userData[sectionKey].links[index].img;
+    const finalImg = (imgVal === "data:image/... (uploaded)" && currentImg.startsWith("data:image/")) ? currentImg : imgVal;
+    userData[sectionKey].links[index] = { name: nameVal, url: urlVal, img: finalImg };
     localStorage.setItem("naxstart_data", JSON.stringify(userData));
     renderLinks();
+};
+
+window.uploadLinkImage = function(sectionKey, index, event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    // Aceptar cualquier tipo de imagen
+    if (!file.type.startsWith('image/') && !file.name.match(/\.(png|jpe?g|gif|webp|bmp|svg)$/i)) {
+        alert("Please select an image file.");
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        userData[sectionKey].links[index].img = e.target.result;
+        localStorage.setItem("naxstart_data", JSON.stringify(userData));
+        renderLinks();
+        renderSettings();
+    };
+    reader.readAsDataURL(file);
 };
 
 window.addLinkToSection = function(sectionKey) {
@@ -80,6 +102,7 @@ window.addLinkToSection = function(sectionKey) {
         alert("Limit of 8 links reached for this section.");
         return;
     }
+    // Crear link vacío para editar directamente en la lista
     userData[sectionKey].links.push({ name: "", url: "", img: "" });
     localStorage.setItem("naxstart_data", JSON.stringify(userData));
     renderSettings();
@@ -233,37 +256,42 @@ function renderSettings() {
     const container = document.getElementById("settings-controls");
     if (!container) return;
     container.innerHTML = `
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--primary);">
-            <button onclick="addSection()" style="grid-column: span 2; background: var(--primary); color: var(--background); padding: 10px; cursor: pointer; font-weight: bold; border-radius: 4px; letter-spacing: 1px;">+ CREATE NEW SECTION</button>
-            <button onclick="exportConfig()" style="background: var(--contrast); color: var(--text); border: 1px solid var(--primary); padding: 8px; cursor: pointer; font-size: 0.8em; border-radius: 4px;">⬇ EXPORT JSON</button>
-            <button onclick="document.getElementById('file-import').click()" style="background: var(--contrast); color: var(--text); border: 1px solid var(--primary); padding: 8px; cursor: pointer; font-size: 0.8em; border-radius: 4px;">⬆ IMPORT JSON</button>
-            <input type="file" id="file-import" style="display:none" onchange="importConfig(event)">
+        <div class="settings-section">
+            <div class="settings-section-title">General</div>
+            <div class="settings-row">
+                <button onclick="addSection()" class="settings-btn">+ CREATE NEW SECTION</button>
+                <button onclick="exportConfig()" class="settings-btn secondary">⬇ EXPORT JSON</button>
+                <button onclick="document.getElementById('file-import').click()" class="settings-btn secondary">⬆ IMPORT JSON</button>
+                <input type="file" id="file-import" class="settings-input file-input" onchange="importConfig(event)">
+            </div>
         </div>
     `;
     for (const key in userData) {
         const section = userData[key];
         const div = document.createElement("div");
-        div.style.marginBottom = "30px";
-        div.style.padding = "10px";
-        div.style.background = "rgba(0,0,0,0.1)";
-        div.style.borderRadius = "8px";
+        div.className = "settings-section";
         div.innerHTML = `
-            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
-                <input type="text" id="edit-section-title-${key}" value="${section.title}" oninput="updateSectionTitle('${key}')" style="flex-grow: 1; background: none; border: 1px solid var(--primary); color: var(--primary); font-weight: bold; padding: 4px; border-radius: 3px;">
-                <button onclick="addLinkToSection('${key}')" style="background: var(--primary); color: var(--background); font-size: 0.7em; padding: 5px 8px; cursor: pointer; border-radius: 3px; font-weight: bold;">+ LINK</button>
-                <button onclick="removeSection('${key}')" style="background: none; color: #ff5555; cursor: pointer; font-size: 0.7em; border: 1px solid #ff5555; padding: 4px; border-radius: 3px;">DEL SEC</button>
+            <div class="settings-row" style="margin-bottom: 12px;">
+                <input type="text" id="edit-section-title-${key}" value="${section.title}" oninput="updateSectionTitle('${key}')" class="settings-input" style="flex-grow: 1; font-weight: bold; color: var(--primary); border-color: var(--primary);">
+                <button onclick="addLinkToSection('${key}')" class="settings-btn">+ LINK</button>
+                <button onclick="removeSection('${key}')" class="settings-btn danger">DEL SEC</button>
             </div>
         `;
         section.links.forEach((link, idx) => {
             const row = document.createElement("div");
-            row.style.display = "flex";
-            row.style.gap = "6px";
-            row.style.marginBottom = "6px";
+            row.className = "settings-row";
+            // Truncar el valor de imagen si es base64 para no saturar el input
+            const isBase64 = link.img && link.img.startsWith("data:image/");
+            const displayImg = isBase64 ? "data:image/... (uploaded)" : (link.img || "");
             row.innerHTML = `
-                <input type="text" id="edit-name-${key}-${idx}" value="${link.name}" placeholder="Title" oninput="updateLink('${key}', ${idx})" style="width: 25%; background: var(--background); color: var(--text); border: 1px solid var(--contrast); padding: 6px; border-radius: 3px; font-size: 0.85em;">
-                <input type="text" id="edit-url-${key}-${idx}" value="${link.url}" placeholder="URL" oninput="updateLink('${key}', ${idx})" style="width: 40%; background: var(--background); color: var(--text); border: 1px solid var(--contrast); padding: 6px; border-radius: 3px; font-size: 0.85em;">
-                <input type="text" id="edit-img-${key}-${idx}" value="${link.img}" placeholder="Icon path" oninput="updateLink('${key}', ${idx})" style="width: 25%; background: var(--background); color: var(--text); border: 1px solid var(--contrast); padding: 6px; border-radius: 3px; font-size: 0.85em;">
-                <button onclick="removeLinkFromSection('${key}', ${idx})" style="width: 10%; background: none; color: #ff5555; border: 1px solid #ff5555; cursor: pointer; border-radius: 3px; font-weight: bold;">×</button>
+                <input type="text" id="edit-name-${key}-${idx}" value="${link.name}" placeholder="Name" oninput="updateLink('${key}', ${idx})" class="settings-input" style="flex: 2;">
+                <input type="text" id="edit-url-${key}-${idx}" value="${link.url}" placeholder="URL" oninput="updateLink('${key}', ${idx})" class="settings-input" style="flex: 3;">
+                <input type="text" id="edit-img-${key}-${idx}" value="${displayImg}" placeholder="Icon path" oninput="updateLink('${key}', ${idx})" class="settings-input" style="flex: 2;">
+                <label class="settings-upload-label">
+                    📁 Upload
+                    <input type="file" accept="image/*" onchange="uploadLinkImage('${key}', ${idx}, event)" class="settings-input file-input">
+                </label>
+                <button onclick="removeLinkFromSection('${key}', ${idx})" class="settings-remove-btn">×</button>
             `;
             div.appendChild(row);
         });
@@ -284,7 +312,7 @@ function renderLinks() {
             <div class="link-section__grid">
                 ${section.links.map(link => link.url ? `
                     <a href="${link.url}" target="_blank" class="page-link" title="${link.name}">
-                        <img src="${link.img}" alt="${link.name}" class="link-img">
+                        ${link.img ? `<img src="${link.img}" alt="${link.name}" class="link-img">` : `<span class="link-icon-placeholder">${(link.name || "???").substring(0, 3).toUpperCase()}</span>`}
                     </a>` : '').join('')}
             </div>
         `;

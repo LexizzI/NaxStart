@@ -27,16 +27,24 @@ body, html {
     height: 100svh;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Evita scrolls raros en la página entera */
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
 }
 
 .content--wrapper {
     display: flex;
     flex-direction: column;
     width: 100svw;
-    height: 100svh;
+    min-height: 100svh;
     justify-content: center;
     align-items: center;
+    overflow: visible;
 }
 
 .selector{
@@ -89,11 +97,14 @@ body, html {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
+    z-index: 1;
 }
 
 .page-link:hover {
     background-color: var(--primary);
     box-shadow: 0px 0px 20px var(--primary);
+    z-index: 10;
 }
 
 .page-link:hover .link-img,
@@ -104,37 +115,54 @@ body, html {
 /* --- SECCIÓN CORREGIDA: EL DIV YA NO TOCA LOS EXTREMOS DEL MONITOR --- */
 .links-block {
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
+    align-items: flex-start;
+    justify-content: center; /* Centra las secciones en el viewport */
     gap: 2.5em; /* Distancia entre tarjetas */
     flex-wrap: nowrap;
     
-    /* Reducimos el ancho del bloque para dejar un 5% libre en cada lateral */
+    /* Ancho fijo para mostrar 4 secciones, centrado en el monitor */
     width: 90vw; 
     margin: 0 auto; /* Centra el contenedor completo en el monitor */
-    padding: 2em 0; /* Quitamos el padding lateral para que mande el ancho del contenedor */
+    padding: 2em; /* Padding en todos los lados para que las sombras no se recorten */
     
     box-sizing: border-box;
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: auto;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     
-    scroll-snap-type: x mandatory; 
-    scrollbar-width: none; 
-    -ms-overflow-style: none; 
+    scroll-snap-type: x proximity; 
+    scroll-padding-left: 2em; /* Alinea el snap con el padding */
+    scroll-padding-right: 2em; /* Espacio a la derecha para que la 5ª sección no se vea */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) var(--contrast2);
 }
 
+/* Scrollbar horizontal personalizada */
 .links-block::-webkit-scrollbar {
-    display: none; 
+    height: 8px;
+}
+
+.links-block::-webkit-scrollbar-track {
+    background: var(--contrast2);
+    border-radius: 4px;
+}
+
+.links-block::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
+
+.links-block::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+    opacity: 0.8;
 }
 
 /* --- AJUSTE DE TARJETAS BASADO EN EL NUEVO ANCHO DEL DIV --- */
 .link-section {
     background-color: var(--contrast2);
-    /* Calculado sobre el nuevo ancho útil de 90vw para mantener 4 elementos perfectos */
-    width: calc((90vw - (2.5em * 3)) / 4); 
-    min-width: 18em; 
+    /* Cada sección es 1/4 del ancho útil (90vw - padding 4em - 3 gaps de 2.5em) */
+    width: calc((90vw - 4em - (2.5em * 3)) / 4); 
     padding: 1.5em;
     border-radius: 12px;
     display: flex;
@@ -143,6 +171,7 @@ body, html {
     flex-direction: column;
     gap: 1.5em;
     flex-shrink: 0;
+    overflow: visible;
     
     box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.4);
     
@@ -186,11 +215,9 @@ body, html {
     grid-auto-rows: 7em;
     gap: 1em;
     width: 15em;
-    height: 15em;
-    max-height: 15em;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding-right: 4px;
+    min-height: 15em; /* Altura mínima = 2 filas de links (7em + 1em gap + 7em) */
+    align-content: start; /* Los links se alinean desde arriba */
+    overflow: visible;
     scrollbar-width: none; 
     -ms-overflow-style: none; 
 }
@@ -216,23 +243,20 @@ body, html {
 
 .link-icon-placeholder {
     width: 100%;               
-    max-width: 48px;           
+    max-width: 70px;           
     aspect-ratio: 1 / 1;       
-    background: var(--contrast2);
     color: #ffffff;            
-    border: 2px solid var(--primary);
-    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Ubuntu', sans-serif;
     font-weight: bold;
-    font-size: 13px;           
+    font-size: 18px;           
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     user-select: none;
     box-sizing: border-box; 
-    transition: padding 0.3s, border-color 0.5s;
+    transition: padding 0.3s, transform 0.3s;
     flex-shrink: 0;            
     margin: 0 auto;            
 }
@@ -266,28 +290,191 @@ body, html {
 }
 
 .settings-panel {
-   position: fixed;
+    position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: var(--contrast2); 
+    background-color: var(--contrast2);
     color: var(--text);
     padding: 1.5em;
-    border-radius: 8px;
-    box-shadow: 0px 0px 20px #000000;
+    border-radius: 12px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
     font-family: "Ubuntu", sans-serif;
-    border: 1px solid var(--primary);
+    border: 1px solid var(--contrast);
     z-index: 1000;
     display: none;
+    transition: all 0.3s ease;
 }
 
 .settings-panel.active {
     display: block !important;
 }
 
+.settings-title {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.5em;
+    text-align: center;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid var(--contrast);
+}
+
 #settings-controls {
-    max-height: 450px;
+    max-height: 500px;
     overflow-y: auto;
     padding-right: 10px;
+}
+
+#settings-controls::-webkit-scrollbar {
+    width: 6px;
+}
+
+#settings-controls::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+/* Estilos para los controles del settings panel */
+.settings-section {
+    margin-bottom: 25px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    border: 1px solid var(--contrast);
+}
+
+.settings-section-title {
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary);
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.settings-section-title::before {
+    content: "";
+    width: 20px;
+    height: 2px;
+    background: var(--primary);
+}
+
+.settings-btn {
+    background: var(--primary);
+    color: var(--background);
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-family: "Ubuntu", sans-serif;
+    font-size: 0.8em;
+    font-weight: 700;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.settings-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.settings-btn.danger {
+    background: none;
+    color: #ff5555;
+    border: 1px solid #ff5555;
+}
+
+.settings-btn.danger:hover {
+    background: #ff5555;
+    color: var(--background);
+}
+
+.settings-btn.secondary {
+    background: var(--contrast);
+    color: var(--text);
+    border: 1px solid var(--primary);
+}
+
+.settings-btn.secondary:hover {
+    background: var(--primary);
+    color: var(--background);
+}
+
+.settings-input {
+    background: var(--background);
+    color: var(--text);
+    border: 1px solid var(--contrast);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: "Ubuntu", sans-serif;
+    font-size: 0.85em;
+    transition: border-color 0.2s;
+}
+
+.settings-input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.settings-input.file-input {
+    display: none;
+}
+
+.settings-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.settings-row .settings-input {
+    flex-grow: 1;
+}
+
+.settings-upload-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--background);
+    color: var(--text);
+    border: 1px solid var(--contrast);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75em;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+}
+
+.settings-upload-label:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.settings-remove-btn {
+    background: none;
+    color: #ff5555;
+    border: 1px solid #ff5555;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+    padding: 4px 8px;
+    font-size: 0.85em;
+    flex-shrink: 0;
+}
+
+.settings-remove-btn:hover {
+    background: #ff5555;
+    color: var(--background);
 }
 
 .hidden { display: none !important; }
@@ -534,8 +721,10 @@ body, html {
 
     .content--wrapper {
         height: auto;
+        min-height: auto;
         width: 100%;
         flex-wrap: nowrap;
+        overflow-y: visible;
     }
 
     .welcome-message {
@@ -550,20 +739,16 @@ body, html {
         gap: 20px;
         width: 100vw;
         max-height: none; 
-        overflow-x: auto;
-        overflow-y: hidden;
+        overflow: visible;
         padding: 1em;
         scrollbar-width: none;
-    }
-    
-    .links-block::-webkit-scrollbar {
-        display: none;
     }
 
     .link-section {
         width: 85vw;
         flex-shrink: 0;
         scroll-snap-align: center;
+        overflow: visible;
     }
 
     .link-section__grid {
@@ -571,11 +756,10 @@ body, html {
         grid-template-columns: repeat(2, 1fr);
         grid-auto-rows: 7em;
         width: 100%;
+        min-height: 15em;
+        align-content: start; /* Los links se alinean desde arriba */
         gap: 12px;
-        height: 15em;
-        max-height: 15em;
-        overflow-x: hidden;
-        overflow-y: auto;
+        overflow: visible;
         scrollbar-width: none;
     }
     
